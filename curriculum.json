@@ -1,0 +1,1275 @@
+[
+  {
+    "c": "S0",
+    "t": "Orientation",
+    "wk": "Week 0",
+    "bl": "Two days to see the whole board.",
+    "chs": [
+      {
+        "t": "The job, and Harbor's vocabulary",
+        "h": 2,
+        "o": "You can describe the loop an evals team runs — task → dataset → job → trajectory → reward → leaderboard → RL — and where your work fits in it.",
+        "l": [
+          [
+            "Harbor docs",
+            "https://docs.harborframework.com/",
+            "docs"
+          ],
+          [
+            "Core concepts",
+            "https://docs.harborframework.com/core-concepts",
+            "docs"
+          ],
+          [
+            "Terminal-Bench paper (ICLR 2026)",
+            "https://arxiv.org/abs/2601.11868",
+            "paper"
+          ],
+          [
+            "Terminal-Bench site",
+            "https://www.tbench.ai/",
+            "tool"
+          ]
+        ]
+      },
+      {
+        "t": "The framework landscape",
+        "h": 3,
+        "o": "You can place any eval request against the right harness — Harbor, Inspect, lm-evaluation-harness, OpenAI Evals, HELM, lighteval — and know what problem each one actually solves.",
+        "l": [
+          [
+            "Inspect (UK AISI)",
+            "https://inspect.aisi.org.uk/",
+            "docs"
+          ],
+          [
+            "lm-evaluation-harness",
+            "https://github.com/EleutherAI/lm-evaluation-harness",
+            "repo"
+          ],
+          [
+            "OpenAI Evals",
+            "https://github.com/openai/evals",
+            "repo"
+          ],
+          [
+            "HELM (Stanford CRFM)",
+            "https://crfm.stanford.edu/helm/",
+            "tool"
+          ],
+          [
+            "simple-evals",
+            "https://github.com/openai/simple-evals",
+            "repo"
+          ],
+          [
+            "LightEval",
+            "https://github.com/huggingface/lighteval",
+            "repo"
+          ]
+        ]
+      },
+      {
+        "t": "The benchmarks that matter",
+        "h": 2,
+        "o": "You can say what each headline benchmark measures, how it is graded, and its known blind spots — the difference between reading a leaderboard and trusting one.",
+        "l": [
+          [
+            "SWE-bench",
+            "https://www.swebench.com/",
+            "tool"
+          ],
+          [
+            "OSWorld",
+            "https://os-world.github.io/",
+            "tool"
+          ],
+          [
+            "WebArena",
+            "https://webarena.dev/",
+            "tool"
+          ],
+          [
+            "τ³-bench (maintained successor)",
+            "https://github.com/sierra-research/tau2-bench",
+            "repo"
+          ],
+          [
+            "GAIA",
+            "https://huggingface.co/datasets/gaia-benchmark/GAIA",
+            "tool"
+          ],
+          [
+            "Aider polyglot leaderboard",
+            "https://aider.chat/docs/leaderboards/",
+            "tool"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "c": "S1",
+    "t": "Builder foundations",
+    "wk": "Weeks 1–3",
+    "bl": "The unglamorous 20%.",
+    "chs": [
+      {
+        "t": "Python for eval harnesses",
+        "h": 8,
+        "o": "You can write a runner that launches dozens of subprocesses concurrently, enforces timeouts, and collects structured results without leaking processes.",
+        "l": [
+          [
+            "Python tutorial",
+            "https://docs.python.org/3/tutorial/",
+            "docs"
+          ],
+          [
+            "asyncio",
+            "https://docs.python.org/3/library/asyncio.html",
+            "docs"
+          ],
+          [
+            "uv (package/tool runner)",
+            "https://docs.astral.sh/uv/",
+            "tool"
+          ],
+          [
+            "Optional beginner Python course (2018)",
+            "https://www.youtube.com/watch?v=rfscVS0vtbw",
+            "video"
+          ]
+        ]
+      },
+      {
+        "t": "Shell and Linux inside containers",
+        "h": 6,
+        "o": "You can find your way around a bare container — pipes, environment variables, permissions, processes — the same environment every agent task runs in.",
+        "l": [
+          [
+            "Missing Semester (MIT)",
+            "https://missing.csail.mit.edu/",
+            "course"
+          ],
+          [
+            "Shell tools and scripting",
+            "https://missing.csail.mit.edu/2020/shell-tools/",
+            "course"
+          ],
+          [
+            "Missing Semester playlist",
+            "https://www.youtube.com/playlist?list=PLyzOVJj3bHQuloKGG59rS43e29ro7I57J",
+            "video"
+          ],
+          [
+            "Missing Semester L1: the shell",
+            "https://www.youtube.com/watch?v=Z56Jmr9Z34Q",
+            "video"
+          ]
+        ]
+      },
+      {
+        "t": "Git and pull-request workflow",
+        "h": 4,
+        "o": "You can branch, rebase, and open a clean PR that passes review — the same motion you will use to contribute tasks to a public registry.",
+        "l": [
+          [
+            "Pro Git (free book)",
+            "https://git-scm.com/book/en/v2",
+            "course"
+          ],
+          [
+            "Version control (Missing Semester)",
+            "https://missing.csail.mit.edu/2020/version-control/",
+            "course"
+          ],
+          [
+            "freeCodeCamp: Git & GitHub crash course",
+            "https://www.youtube.com/watch?v=RGOj5yH7evk",
+            "video"
+          ]
+        ]
+      },
+      {
+        "t": "Docker and the sandbox boundary",
+        "h": 8,
+        "o": "You can author Dockerfiles and compose setups that make a task deterministic and isolated, and explain why the sandbox is the real security boundary of an agent eval.",
+        "l": [
+          [
+            "Docker: get started",
+            "https://docs.docker.com/get-started/",
+            "docs"
+          ],
+          [
+            "Docker curriculum",
+            "https://docker-curriculum.com/",
+            "course"
+          ],
+          [
+            "Harbor cookbook recipes",
+            "https://github.com/harbor-framework/harbor-cookbook/tree/main/harbor_cookbook/recipes",
+            "repo"
+          ],
+          [
+            "Optional Docker foundations (2019; use current docs for commands)",
+            "https://www.youtube.com/watch?v=fqMOX6JJhGo",
+            "video"
+          ]
+        ]
+      },
+      {
+        "t": "pytest and graders that don't flake",
+        "h": 5,
+        "o": "You can turn a written requirement into deterministic pass/fail and scored checks, including artifact inspection and partial credit.",
+        "l": [
+          [
+            "pytest docs",
+            "https://docs.pytest.org/en/stable/",
+            "docs"
+          ],
+          [
+            "RewardKit quick start",
+            "https://docs.harborframework.com/rewardkit/quick-start",
+            "docs"
+          ],
+          [
+            "RewardKit built-in criteria",
+            "https://docs.harborframework.com/rewardkit/built-in-criteria",
+            "docs"
+          ],
+          [
+            "freeCodeCamp: Pytest tutorial",
+            "https://www.youtube.com/watch?v=cHYq1MRoyI0",
+            "video"
+          ]
+        ]
+      },
+      {
+        "t": "APIs, HTTP and structured data",
+        "h": 5,
+        "o": "You can call model and tool APIs correctly under retries, rate limits and streaming, and emit JSON / TOML / YAML that downstream tooling can parse.",
+        "l": [
+          [
+            "Function calling (OpenAI)",
+            "https://platform.openai.com/docs/guides/function-calling",
+            "docs"
+          ],
+          [
+            "Model Context Protocol",
+            "https://modelcontextprotocol.io/introduction",
+            "docs"
+          ],
+          [
+            "TOML spec",
+            "https://toml.io/en/",
+            "docs"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "c": "S2",
+    "t": "LLM fundamentals",
+    "wk": "Weeks 2–6",
+    "bl": "Why tasks fail.",
+    "chs": [
+      {
+        "t": "How LLMs actually work",
+        "h": 10,
+        "o": "You can explain tokenization, attention, and sampling parameters, and predict which knobs affect eval variance before blaming the model.",
+        "l": [
+          [
+            "Intro to LLMs (Karpathy)",
+            "https://www.youtube.com/watch?v=zjkBMFhNj_g",
+            "video"
+          ],
+          [
+            "Deep Dive into LLMs (Karpathy)",
+            "https://www.youtube.com/watch?v=7xTGNNLPyMI",
+            "video"
+          ],
+          [
+            "Optional research depth: build GPT from scratch",
+            "https://www.youtube.com/watch?v=kCc8FmEb1nY",
+            "video"
+          ],
+          [
+            "The Illustrated Transformer",
+            "https://jalammar.github.io/illustrated-transformer/",
+            "blog"
+          ],
+          [
+            "tiktokenizer",
+            "https://tiktokenizer.vercel.app/",
+            "tool"
+          ]
+        ]
+      },
+      {
+        "t": "Training and post-training",
+        "h": 8,
+        "o": "You can describe SFT, preference tuning and RLVR stages, and say what each one implies about what your evals should probe next.",
+        "l": [
+          [
+            "The RLHF Book (Lambert)",
+            "https://rlhfbook.com/",
+            "course"
+          ],
+          [
+            "Illustrated RLHF",
+            "https://huggingface.co/blog/rlhf",
+            "blog"
+          ],
+          [
+            "TRL docs",
+            "https://huggingface.co/docs/trl/index",
+            "docs"
+          ]
+        ]
+      },
+      {
+        "t": "Inference economics and scale",
+        "h": 5,
+        "o": "You can estimate cost, latency and concurrency per trial before committing to a 1,000-trial run — and know where caching and batching save money.",
+        "l": [
+          [
+            "LLM inference performance engineering",
+            "https://databricks.com/blog/llm-inference-performance-engineering-best-practices",
+            "blog"
+          ],
+          [
+            "Transformer inference arithmetic",
+            "https://kipp.ly/transformer-inference-arithmetic/",
+            "blog"
+          ]
+        ]
+      },
+      {
+        "t": "Agents, tools, context engineering",
+        "h": 8,
+        "o": "You can build a small tool-using agent and name the design surfaces you will later grade: tool descriptions, context layout, loops, memory, permissioning.",
+        "l": [
+          [
+            "Building effective agents (Anthropic)",
+            "https://www.anthropic.com/engineering/building-effective-agents",
+            "blog"
+          ],
+          [
+            "Effective context engineering",
+            "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents",
+            "blog"
+          ],
+          [
+            "Writing effective tools for agents",
+            "https://www.anthropic.com/engineering/writing-tools-for-agents",
+            "blog"
+          ],
+          [
+            "12-Factor Agents",
+            "https://github.com/humanlayer/12-factor-agents",
+            "repo"
+          ],
+          [
+            "A practical guide to building agents (OpenAI)",
+            "https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf",
+            "paper"
+          ],
+          [
+            "Optional context: Software Is Changing (Again)",
+            "https://www.youtube.com/watch?v=LCEmiRjPEtQ",
+            "video"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "c": "S3",
+    "t": "Evals thinking",
+    "wk": "Weeks 4–9",
+    "bl": "The discipline under the tooling.",
+    "chs": [
+      {
+        "t": "Error analysis before metrics",
+        "h": 6,
+        "o": "Given 50 traces, you can run open coding, produce a failure taxonomy, and rank fixes by frequency — before writing a single metric.",
+        "l": [
+          [
+            "A Field Guide to Rapidly Improving AI Products",
+            "https://hamel.dev/blog/posts/field-guide/",
+            "blog"
+          ],
+          [
+            "Your AI product needs evals",
+            "https://hamel.dev/blog/posts/evals/",
+            "blog"
+          ],
+          [
+            "AI Evaluations Clearly Explained (Hamel)",
+            "https://www.youtube.com/watch?v=uiza7wp1KrE",
+            "video"
+          ],
+          [
+            "AI Evals for Engineers and PMs (course)",
+            "https://maven.com/parlance-labs/evals",
+            "course"
+          ]
+        ]
+      },
+      {
+        "t": "Eval taxonomy and the dev loop",
+        "h": 6,
+        "o": "You can choose unit / integration / online evals per stage of a product, and design the loop where failing evals become fixed behavior, not backlog.",
+        "l": [
+          [
+            "Task-specific evals that do and don't work",
+            "https://eugeneyan.com/writing/evals/",
+            "blog"
+          ],
+          [
+            "Product evals in three simple steps",
+            "https://eugeneyan.com/writing/product-evals/",
+            "blog"
+          ],
+          [
+            "LangSmith evaluation concepts",
+            "https://docs.langchain.com/langsmith/evaluation",
+            "docs"
+          ],
+          [
+            "Demystifying evals for AI agents",
+            "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+            "blog"
+          ]
+        ]
+      },
+      {
+        "t": "Designing a benchmark",
+        "h": 8,
+        "o": "You can spec a suite with deliberate coverage and difficulty, write tasks that discriminate between models, and anticipate saturation and leakage.",
+        "l": [
+          [
+            "Terminal-Bench paper",
+            "https://arxiv.org/abs/2601.11868",
+            "paper"
+          ],
+          [
+            "SWE-bench paper",
+            "https://arxiv.org/abs/2310.06770",
+            "paper"
+          ],
+          [
+            "SWE-bench Pro (Scale)",
+            "https://scale.com/blog/swe-bench-pro",
+            "blog"
+          ],
+          [
+            "Epoch AI benchmarks hub",
+            "https://epoch.ai/benchmarks",
+            "tool"
+          ]
+        ]
+      },
+      {
+        "t": "Verifiers and reward design",
+        "h": 8,
+        "o": "You can convert a task into a graded verifier — programmatic checks plus judge criteria — with partial credit and checks that survive optimization pressure.",
+        "l": [
+          [
+            "Verifier (Harbor)",
+            "https://docs.harborframework.com/tasks/verifier",
+            "docs"
+          ],
+          [
+            "Separate verifier sandbox",
+            "https://docs.harborframework.com/tasks/separate-verifier",
+            "docs"
+          ],
+          [
+            "Build a verifier with RewardKit",
+            "https://docs.harborframework.com/tutorials/create-a-verifier-with-rewardkit",
+            "docs"
+          ]
+        ]
+      },
+      {
+        "t": "Judges and rubrics",
+        "h": 6,
+        "o": "You can write judge prompts and rubrics, measure agreement with human labels, and control position and length bias.",
+        "l": [
+          [
+            "Judging LLM-as-a-Judge (MT-Bench)",
+            "https://arxiv.org/abs/2306.05685",
+            "paper"
+          ],
+          [
+            "G-Eval",
+            "https://arxiv.org/abs/2303.16634",
+            "paper"
+          ],
+          [
+            "Evaluating LLM-evaluators",
+            "https://eugeneyan.com/writing/llm-evaluators/",
+            "blog"
+          ],
+          [
+            "Judge criteria (RewardKit)",
+            "https://docs.harborframework.com/rewardkit/judge-criteria",
+            "docs"
+          ]
+        ]
+      },
+      {
+        "t": "Statistical rigor",
+        "h": 6,
+        "o": "You can put error bars on a leaderboard row, size a run before launching it, report pass@k, and flag tasks that are too flaky to trust.",
+        "l": [
+          [
+            "Adding error bars to evals",
+            "https://arxiv.org/abs/2411.00640",
+            "paper"
+          ],
+          [
+            "A statistical approach to model evals (Anthropic)",
+            "https://www.anthropic.com/research/statistical-approach-to-model-evals",
+            "blog"
+          ],
+          [
+            "pass@k (Codex)",
+            "https://arxiv.org/abs/2107.03374",
+            "paper"
+          ]
+        ]
+      },
+      {
+        "t": "Trajectory analysis",
+        "h": 6,
+        "o": "You can parse and review trajectories, label a failure taxonomy, distinguish tool/environment failures from reasoning failures, and turn one observed failure into a regression test. Loading a session is a separate operation.",
+        "l": [
+          [
+            "Loading trajectories (Harbor)",
+            "https://docs.harborframework.com/jobs/loading-trajectories",
+            "docs"
+          ],
+          [
+            "ATIF trajectory format",
+            "https://docs.harborframework.com/agents/atif",
+            "docs"
+          ],
+          [
+            "Evaluating LLM agents in terminal settings",
+            "https://www.youtube.com/watch?v=zt-U4lDdenY",
+            "video"
+          ],
+          [
+            "Demystifying evals for AI agents",
+            "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+            "blog"
+          ],
+          [
+            "Instrument application traces with OpenTelemetry",
+            "https://opentelemetry.io/docs/languages/python/instrumentation/",
+            "docs"
+          ],
+          [
+            "Trace issue localization: TRAIL",
+            "https://arxiv.org/abs/2505.08638",
+            "paper"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "c": "S4",
+    "t": "Harbor in depth",
+    "wk": "Weeks 6–13",
+    "bl": "The centerpiece.",
+    "chs": [
+      {
+        "t": "Install and first jobs",
+        "h": 4,
+        "o": "You have Harbor installed, hello-world and Terminal-Bench 2.0 run locally with two different agents, and you can view and upload the results.",
+        "l": [
+          [
+            "Installation",
+            "https://docs.harborframework.com/getting-started/installation",
+            "docs"
+          ],
+          [
+            "Quick start",
+            "https://docs.harborframework.com/getting-started/quick-start",
+            "docs"
+          ],
+          [
+            "Run a job",
+            "https://docs.harborframework.com/jobs/run-a-job",
+            "docs"
+          ],
+          [
+            "View job results",
+            "https://docs.harborframework.com/results/view-job-results",
+            "docs"
+          ],
+          [
+            "Using Harbor to run agent evals at scale",
+            "https://www.youtube.com/watch?v=3Hggv3abkmI",
+            "video"
+          ]
+        ]
+      },
+      {
+        "t": "Anatomy of a Harbor task",
+        "h": 8,
+        "o": "You can build a task from scratch — instruction, task.toml, environment, solution, tests — run it locally, and verify the oracle passes while an empty agent fails.",
+        "l": [
+          [
+            "Task overview",
+            "https://docs.harborframework.com/tasks/overview",
+            "docs"
+          ],
+          [
+            "Create a task (tutorial)",
+            "https://docs.harborframework.com/tutorials/create-a-task",
+            "docs"
+          ],
+          [
+            "Task configuration",
+            "https://docs.harborframework.com/tasks/configuration",
+            "docs"
+          ],
+          [
+            "Task environment",
+            "https://docs.harborframework.com/tasks/environment",
+            "docs"
+          ],
+          [
+            "Task instruction",
+            "https://docs.harborframework.com/tasks/instruction",
+            "docs"
+          ]
+        ]
+      },
+      {
+        "t": "Verifiers, deep dive",
+        "h": 6,
+        "o": "You can emit reward.txt / reward.json, isolate the verifier in its own sandbox, and regrade existing trials while iterating on a grader.",
+        "l": [
+          [
+            "Verifier",
+            "https://docs.harborframework.com/tasks/verifier",
+            "docs"
+          ],
+          [
+            "Regrade",
+            "https://docs.harborframework.com/jobs/regrade",
+            "docs"
+          ],
+          [
+            "Task artifacts",
+            "https://docs.harborframework.com/tasks/artifacts",
+            "docs"
+          ]
+        ]
+      },
+      {
+        "t": "Datasets and registries",
+        "h": 6,
+        "o": "You can compose a dataset.toml, run datasets from the Hub, a git repo or a local directory, define aggregate metrics, and version the set.",
+        "l": [
+          [
+            "Datasets",
+            "https://docs.harborframework.com/datasets/datasets",
+            "docs"
+          ],
+          [
+            "Create a dataset",
+            "https://docs.harborframework.com/datasets/create-a-dataset",
+            "docs"
+          ],
+          [
+            "Git repo datasets",
+            "https://docs.harborframework.com/datasets/git-repos",
+            "docs"
+          ],
+          [
+            "Registries",
+            "https://docs.harborframework.com/datasets/registries",
+            "docs"
+          ],
+          [
+            "Metrics",
+            "https://docs.harborframework.com/datasets/metrics",
+            "docs"
+          ]
+        ]
+      },
+      {
+        "t": "Agents and trajectories",
+        "h": 6,
+        "o": "You can run one suite across many agents, write a custom agent against BaseAgent, and produce or parse ATIF trajectories for analysis.",
+        "l": [
+          [
+            "Pre-integrated agents",
+            "https://docs.harborframework.com/agents/pre-integrated-agents",
+            "docs"
+          ],
+          [
+            "Custom agents",
+            "https://docs.harborframework.com/agents/custom-agents",
+            "docs"
+          ],
+          [
+            "ATIF",
+            "https://docs.harborframework.com/agents/atif",
+            "docs"
+          ],
+          [
+            "Harbor x LangChain: unified eval stack",
+            "https://www.youtube.com/watch?v=Rh6KWngr8T4",
+            "video"
+          ]
+        ]
+      },
+      {
+        "t": "Sandboxes at scale",
+        "h": 6,
+        "o": "You can run 32+ trials in parallel on cloud sandboxes, pass secrets safely, blacklist network access per task, and add a custom runtime.",
+        "l": [
+          [
+            "Pre-integrated sandboxes",
+            "https://docs.harborframework.com/sandboxes/pre-integrated-sandboxes",
+            "docs"
+          ],
+          [
+            "Custom sandboxes",
+            "https://docs.harborframework.com/sandboxes/custom-sandboxes",
+            "docs"
+          ],
+          [
+            "Network policies",
+            "https://docs.harborframework.com/tasks/network-policies",
+            "docs"
+          ],
+          [
+            "Environment variables",
+            "https://docs.harborframework.com/jobs/environment-variables",
+            "docs"
+          ],
+          [
+            "Modal sandboxes",
+            "https://modal.com/docs/guide/sandbox",
+            "docs"
+          ],
+          [
+            "Daytona docs",
+            "https://daytona.io/docs",
+            "docs"
+          ]
+        ]
+      },
+      {
+        "t": "Jobs, errors and telemetry",
+        "h": 6,
+        "o": "You can configure and stream large jobs, classify failures into actionable buckets, collect artifacts, and wire OpenTelemetry into a run.",
+        "l": [
+          [
+            "Job configs",
+            "https://docs.harborframework.com/jobs/configs",
+            "docs"
+          ],
+          [
+            "Error classification",
+            "https://docs.harborframework.com/jobs/error-classification",
+            "docs"
+          ],
+          [
+            "Artifact collection",
+            "https://docs.harborframework.com/jobs/artifact-collection",
+            "docs"
+          ],
+          [
+            "Stream",
+            "https://docs.harborframework.com/jobs/stream",
+            "docs"
+          ],
+          [
+            "Instrument application traces with OpenTelemetry",
+            "https://opentelemetry.io/docs/languages/python/instrumentation/",
+            "docs"
+          ]
+        ]
+      },
+      {
+        "t": "Advanced task patterns",
+        "h": 12,
+        "o": "You can build multi-container, MCP-tool, skills, multi-step, simulated-user and computer-use tasks by adapting the cookbook recipes.",
+        "l": [
+          [
+            "Cookbook recipes",
+            "https://github.com/harbor-framework/harbor-cookbook/tree/main/harbor_cookbook/recipes",
+            "repo"
+          ],
+          [
+            "Multi-container task tutorial",
+            "https://docs.harborframework.com/tutorials/create-a-multi-container-task",
+            "docs"
+          ],
+          [
+            "Simulate a user",
+            "https://docs.harborframework.com/jobs/simulate-a-user",
+            "docs"
+          ],
+          [
+            "Multi-step tasks (announcement)",
+            "https://docs.harborframework.com/news/multi-step-tasks",
+            "docs"
+          ]
+        ]
+      },
+      {
+        "t": "Publish, leaderboard, share",
+        "h": 4,
+        "o": "You have a published dataset and a public leaderboard with rows linked to the exact trials behind them — auditable results, not screenshots.",
+        "l": [
+          [
+            "Publish a dataset",
+            "https://docs.harborframework.com/harbor-hub/publish",
+            "docs"
+          ],
+          [
+            "Leaderboards",
+            "https://docs.harborframework.com/harbor-hub/leaderboards",
+            "docs"
+          ],
+          [
+            "Harbor Hub",
+            "https://hub.harborframework.com/",
+            "tool"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "c": "S5",
+    "t": "RL environments & optimization",
+    "wk": "Weeks 10–16",
+    "bl": "Tasks become training data.",
+    "chs": [
+      {
+        "t": "RL foundations, minimal viable",
+        "h": 10,
+        "o": "You can read an environment spec — states, actions, rewards, episodes — and reason about why a reward function will or won't teach the right behavior.",
+        "l": [
+          [
+            "Spinning Up in Deep RL",
+            "https://spinningup.openai.com/en/latest/",
+            "course"
+          ],
+          [
+            "Gymnasium",
+            "https://gymnasium.farama.org/",
+            "docs"
+          ],
+          [
+            "Optional: classical Deep RL course (low maintenance)",
+            "https://huggingface.co/learn/deep-rl-course/unit0/introduction",
+            "course"
+          ]
+        ]
+      },
+      {
+        "t": "The post-training stack",
+        "h": 8,
+        "o": "You can explain SFT, DPO, PPO and GRPO, then run a small controlled training experiment with a baseline, held-out data, versioned settings and a written account of what changed. This is a specialist branch for post-training roles.",
+        "l": [
+          [
+            "The RLHF Book",
+            "https://rlhfbook.com/",
+            "course"
+          ],
+          [
+            "TRL",
+            "https://huggingface.co/docs/trl/index",
+            "docs"
+          ],
+          [
+            "verl",
+            "https://verl.readthedocs.io/en/latest/",
+            "docs"
+          ],
+          [
+            "PyTorch fundamentals and autograd",
+            "https://pytorch.org/tutorials/beginner/basics/intro.html",
+            "docs"
+          ]
+        ]
+      },
+      {
+        "t": "Tasks into RL environments",
+        "h": 10,
+        "o": "You can wrap a Harbor task as an environment with step() and grade(), shape multi-dimensional rewards, and run a small RL loop on it.",
+        "l": [
+          [
+            "Harbor RL (cookbook)",
+            "https://github.com/harbor-framework/harbor-cookbook/tree/main/harbor_cookbook/harbor_rl",
+            "repo"
+          ],
+          [
+            "Verifiers (Prime Intellect)",
+            "https://github.com/PrimeIntellect-ai/verifiers",
+            "repo"
+          ],
+          [
+            "Environments docs (Prime Intellect)",
+            "https://docs.primeintellect.ai/tutorials-environments/environments",
+            "docs"
+          ],
+          [
+            "Prime RL",
+            "https://docs.primeintellect.ai/prime-rl",
+            "docs"
+          ],
+          [
+            "Tinker",
+            "https://github.com/thinking-machines-lab/tinker",
+            "repo"
+          ]
+        ]
+      },
+      {
+        "t": "Harness and prompt optimization",
+        "h": 8,
+        "o": "You can optimize an agent harness with GEPA against your own eval suite, and attribute gains honestly between harness changes and model changes.",
+        "l": [
+          [
+            "GEPA",
+            "https://github.com/gepa-ai/gepa",
+            "repo"
+          ],
+          [
+            "GEPA + Harbor (cookbook)",
+            "https://github.com/harbor-framework/harbor-cookbook/tree/main/harbor_cookbook/gepa",
+            "repo"
+          ],
+          [
+            "MedAgentBench",
+            "https://github.com/stanfordmlgroup/MedAgentBench",
+            "repo"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "c": "S6",
+    "t": "The expert layer",
+    "wk": "Weeks 14–24",
+    "bl": "Adversarial evals, long-horizon, ops.",
+    "chs": [
+      {
+        "t": "Reward hacking and adversarial evals",
+        "h": 10,
+        "o": "You can design evals that resist optimization pressure, detect spec-gaming in traces, and document observed hacking as a first-class finding.",
+        "l": [
+          [
+            "Recent frontier models are reward hacking (METR)",
+            "https://metr.org/blog/2025-06-05-recent-reward-hacking/",
+            "blog"
+          ],
+          [
+            "TRACE",
+            "https://arxiv.org/abs/2601.20103",
+            "paper"
+          ],
+          [
+            "TRAIL",
+            "https://arxiv.org/abs/2505.08638",
+            "paper"
+          ],
+          [
+            "Monitoring reasoning models for misbehavior",
+            "https://arxiv.org/abs/2503.11926",
+            "paper"
+          ]
+        ]
+      },
+      {
+        "t": "Contamination and generalization",
+        "h": 6,
+        "o": "You can run leakage checks, build held-out and time-shifted splits, and state generalization limits instead of leaderboard deltas.",
+        "l": [
+          [
+            "Data contamination in modern benchmarks",
+            "https://arxiv.org/abs/2311.09783",
+            "paper"
+          ],
+          [
+            "Survey: data contamination",
+            "https://arxiv.org/abs/2404.00699",
+            "paper"
+          ],
+          [
+            "Epoch AI benchmarks",
+            "https://epoch.ai/benchmarks",
+            "tool"
+          ]
+        ]
+      },
+      {
+        "t": "Long-horizon and multi-step evals",
+        "h": 8,
+        "o": "You can design milestone tasks with partial credit and time budgets, and measure how capability decays as task length grows.",
+        "l": [
+          [
+            "Measuring AI ability to complete long tasks (METR)",
+            "https://metr.org/blog/2025-03-19-measuring-ai-ability-to-complete-long-tasks/",
+            "blog"
+          ],
+          [
+            "Multi-step tasks",
+            "https://docs.harborframework.com/news/multi-step-tasks",
+            "docs"
+          ],
+          [
+            "Terminal-Bench paper",
+            "https://arxiv.org/abs/2601.11868",
+            "paper"
+          ]
+        ]
+      },
+      {
+        "t": "Eval ops: cost, caching, CI",
+        "h": 8,
+        "o": "You can run a versioned evaluation pipeline with retries, idempotency, timeouts, caching and budget controls, and gate a change in CI using held-out results, uncertainty, cost and latency. Hosted execution alone is not production operations.",
+        "l": [
+          [
+            "Hosted Harbor",
+            "https://docs.harborframework.com/hosted-harbor/index",
+            "docs"
+          ],
+          [
+            "Streaming jobs",
+            "https://docs.harborframework.com/jobs/stream",
+            "docs"
+          ],
+          [
+            "Custom plugins",
+            "https://docs.harborframework.com/plugins/custom-plugins",
+            "docs"
+          ],
+          [
+            "Evaluation gates in CI/CD",
+            "https://docs.langchain.com/langsmith/cicd-pipeline-example",
+            "docs"
+          ],
+          [
+            "Durable workflows with Temporal (Python)",
+            "https://docs.temporal.io/develop/python",
+            "docs"
+          ],
+          [
+            "Instrument application traces with OpenTelemetry",
+            "https://opentelemetry.io/docs/languages/python/instrumentation/",
+            "docs"
+          ]
+        ]
+      },
+      {
+        "t": "Contributing and public proof",
+        "h": 8,
+        "o": "You have an original task-and-verifier pack and a deployed evaluation service, with reproducible results, grader exploit tests, a calibrated judge and a technical decision memo. A useful reviewed OSS contribution backs up your engineering and collaboration claims.",
+        "l": [
+          [
+            "Contributing to Harbor",
+            "https://github.com/harbor-framework/harbor/blob/main/CONTRIBUTING.md",
+            "repo"
+          ],
+          [
+            "Adapter contributing guide",
+            "https://github.com/harbor-framework/harbor/blob/main/adapters/ADAPTER_CONTRIBUTING.md",
+            "repo"
+          ],
+          [
+            "Adapters directory",
+            "https://github.com/harbor-framework/harbor/tree/main/adapters",
+            "repo"
+          ],
+          [
+            "Harbor cookbook",
+            "https://github.com/harbor-framework/harbor-cookbook",
+            "repo"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "c": "S7",
+    "t": "Positioning & targets",
+    "wk": "Week 8+",
+    "bl": "Point skills at market.",
+    "chs": [
+      {
+        "t": "Targets and applications",
+        "h": 4,
+        "o": "You have a ranked target list of evals-forward startups, the exact role titles to search, and three public artifacts backing every claim on your resume.",
+        "l": [
+          [
+            "Frontier List",
+            "https://frontierlist.com/",
+            "tool"
+          ],
+          [
+            "Pavlov's List",
+            "https://pavlovslist.com/",
+            "tool"
+          ],
+          [
+            "Breakout List",
+            "https://breakoutlist.com/",
+            "tool"
+          ],
+          [
+            "Terminal-Bench leaderboard",
+            "https://www.tbench.ai/leaderboard",
+            "tool"
+          ],
+          [
+            "Surge careers",
+            "https://surgehq.ai/careers",
+            "tool"
+          ],
+          [
+            "Scale careers",
+            "https://scale.com/careers",
+            "tool"
+          ],
+          [
+            "Snorkel careers",
+            "https://snorkel.ai/careers/",
+            "tool"
+          ],
+          [
+            "Mercor: Agent Eval Systems",
+            "https://www.mercor.com/blog/agent-eval-systems/",
+            "blog"
+          ],
+          [
+            "Current job requirements and resource audit",
+            "audit.html",
+            "tool"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "c": "S8",
+    "t": "Production applied AI",
+    "wk": "Weeks 8–16",
+    "bl": "Turn the eval loop into a system people can use.",
+    "chs": [
+      {
+        "t": "Typed APIs and a database-backed review tool",
+        "h": 12,
+        "o": "You can build a typed API and PostgreSQL schema for datasets, task versions, trials and labels. A small review interface preserves context and makes human judgments easy to record.",
+        "l": [
+          [
+            "FastAPI tutorial",
+            "https://fastapi.tiangolo.com/tutorial/",
+            "docs"
+          ],
+          [
+            "PostgreSQL tutorial",
+            "https://www.postgresql.org/docs/current/tutorial.html",
+            "docs"
+          ],
+          [
+            "Design an error-analysis viewer",
+            "https://hamel.dev/blog/posts/field-guide/",
+            "blog"
+          ]
+        ]
+      },
+      {
+        "t": "Durable evaluation pipelines and release gates",
+        "h": 12,
+        "o": "You can build durable jobs with retries, timeouts, idempotency and cleanup; attach traces, account for spend, and block a release on a justified regression threshold.",
+        "l": [
+          [
+            "Durable workflows with Temporal (Python)",
+            "https://docs.temporal.io/develop/python",
+            "docs"
+          ],
+          [
+            "Evaluation gates in CI/CD",
+            "https://docs.langchain.com/langsmith/cicd-pipeline-example",
+            "docs"
+          ],
+          [
+            "Instrument application traces with OpenTelemetry",
+            "https://opentelemetry.io/docs/languages/python/instrumentation/",
+            "docs"
+          ],
+          [
+            "Modal sandbox lifecycle",
+            "https://modal.com/docs/guide/sandbox",
+            "docs"
+          ]
+        ]
+      },
+      {
+        "t": "Retrieval and RAG evaluation in a real product",
+        "h": 10,
+        "o": "You can create a held-out retrieval dataset, measure retrieval separately from answer quality, calibrate a groundedness judge against human labels, and show a measured improvement with cost and latency tradeoffs.",
+        "l": [
+          [
+            "Evaluate a RAG application",
+            "https://docs.langchain.com/langsmith/evaluate-rag-tutorial",
+            "docs"
+          ],
+          [
+            "Product evals in three steps",
+            "https://eugeneyan.com/writing/product-evals/",
+            "blog"
+          ],
+          [
+            "Evaluate your LLM judge",
+            "https://eugeneyan.com/writing/llm-evaluators/",
+            "blog"
+          ]
+        ]
+      },
+      {
+        "t": "Browser tasks, human review and portfolio proof",
+        "h": 10,
+        "o": "You can implement a resettable browser or computer-use workflow, verify final application state, collect failure traces and expert feedback, and publish a concise report with baselines, repeated trials and known limitations. Target job level and experience separately from course completion.",
+        "l": [
+          [
+            "WebArena",
+            "https://webarena.dev/",
+            "tool"
+          ],
+          [
+            "OSWorld",
+            "https://os-world.github.io/",
+            "tool"
+          ],
+          [
+            "Demystifying evals for AI agents",
+            "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+            "blog"
+          ],
+          [
+            "Hiring alignment and portfolio requirements",
+            "audit.html",
+            "tool"
+          ]
+        ]
+      }
+    ]
+  }
+]

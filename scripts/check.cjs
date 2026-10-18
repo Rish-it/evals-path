@@ -1,0 +1,18 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const html=fs.readFileSync('index.html','utf8');
+for(const [,script]of html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g))new vm.Script(script);
+const start=html.indexOf('const DATA ='),end=html.indexOf('\nconst KEY',start);
+const data=vm.runInNewContext(html.slice(start,end)+'; DATA');
+assert.equal(data.length,9);const chapters=data.flatMap(s=>s.chs);assert.equal(chapters.length,43);assert.equal(chapters.reduce((n,c)=>n+c.h,0),302);
+assert.equal(chapters[38].t,'Targets and applications');assert.equal(chapters[39].t,'Typed APIs and a database-backed review tool');
+assert.equal(JSON.stringify(data),JSON.stringify(JSON.parse(fs.readFileSync('curriculum.json','utf8'))));
+const urls=chapters.flatMap(c=>c.l.map(l=>l[1]));
+for(const old of ['https://github.com/sierra-research/tau-bench','https://docs.harborframework.com/telemetry/telemetry','https://www.youtube.com/watch?v=x7X9w_GIm1s','https://patronus.ai/careers'])assert(!urls.includes(old),old);
+assert(urls.includes('https://github.com/sierra-research/tau2-bench'));assert(urls.includes('https://opentelemetry.io/docs/languages/python/instrumentation/'));
+const pstart=html.indexOf('function parseProgress('),pend=html.indexOf("document.getElementById('export-progress')",pstart);
+const parse=vm.runInNewContext(html.slice(pstart,pend)+'; parseProgress',{byId:id=>/^c([1-9]|[1-3]\d|4[0-3])$/.test(id),TODAY:'2026-10-18'});
+assert.equal(parse({done:[{id:'c1',completed:'2026-10-17'}]}).c1,'2026-10-17');assert.equal(parse({c39:true}).c39,'2026-10-18');
+assert.throws(()=>parse({done:[{id:'c1',completed:'2026-02-30'}]}));assert.throws(()=>parse({foo:'bar'}));assert.throws(()=>parse({done:[{id:'c999',completed:'2026-10-17'}]}));
+for(const file of ['index.html','audit.html'])assert(!/http:\/\/localhost:8787/.test(fs.readFileSync(file,'utf8')));
+assert.equal((html.match(/role="tab"/g)||[]).length,2);
+console.log('PASS script syntax, 43-chapter curriculum, original IDs, replacements, valid/invalid legacy imports, relative deployment links and two tabs');

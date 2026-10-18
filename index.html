@@ -1,0 +1,2123 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light dark">
+<title>EVALS.PATH — Harbor tracker (bento)</title>
+<script>try{var t=localStorage.getItem("evals-path-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<style>
+:root {
+  --canvas:#e8e8e6; --tile:#f4f4f2; --field:#dededd; --field-hi:#d3d3d1;
+  --ink:#1c1c1b; --body:#464644; --mute:#6d6d6b; --ash:#9b9b99;
+  --ring:rgba(20,20,18,.05); --sh:0 1px 2px rgba(0,0,0,.04);
+  --hover:rgba(20,20,18,.04);
+  --wash:rgba(232,102,26,.07); --wash2:rgba(232,102,26,.1); --wash3:rgba(232,102,26,.14);
+  --orange:#e8661a; --orange-text:#b4440a;
+  --chip:#e8e8e6;
+  --hero:#1b1b1a; --hero2:#292928; --hero3:#2f2f2e;
+  --stripe-end:#dcdcd8;
+  --modal-sh:0 24px 64px rgba(0,0,0,.3);
+  --backdrop:rgba(20,20,18,.34);
+  --tick-ring:#9b9b99;
+}
+:root[data-theme="dark"] {
+  --canvas:#131312; --tile:#1c1c1b; --field:#292928; --field-hi:#333331;
+  --ink:#ecebe8; --body:#b7b5b1; --mute:#8b8987; --ash:#6b6967;
+  --ring:rgba(255,255,255,.065); --sh:0 1px 2px rgba(0,0,0,.4);
+  --hover:rgba(255,255,255,.05);
+  --wash:rgba(255,122,26,.09); --wash2:rgba(255,122,26,.12); --wash3:rgba(255,122,26,.16);
+  --orange:#ff7a1a; --orange-text:#ffa25c;
+  --chip:#262625;
+  --hero:#0d0d0c; --hero2:#1c1c1b; --hero3:#242423;
+  --stripe-end:#3b3b39;
+  --modal-sh:0 24px 64px rgba(0,0,0,.6);
+  --backdrop:rgba(0,0,0,.52);
+  --tick-ring:#6b6967;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --canvas:#131312; --tile:#1c1c1b; --field:#292928; --field-hi:#333331;
+    --ink:#ecebe8; --body:#b7b5b1; --mute:#8b8987; --ash:#6b6967;
+    --ring:rgba(255,255,255,.065); --sh:0 1px 2px rgba(0,0,0,.4);
+    --hover:rgba(255,255,255,.05);
+    --wash:rgba(255,122,26,.09); --wash2:rgba(255,122,26,.12); --wash3:rgba(255,122,26,.16);
+    --orange:#ff7a1a; --orange-text:#ffa25c;
+    --chip:#262625;
+    --hero:#0d0d0c; --hero2:#1c1c1b; --hero3:#242423;
+    --stripe-end:#3b3b39;
+    --modal-sh:0 24px 64px rgba(0,0,0,.6);
+    --backdrop:rgba(0,0,0,.52);
+    --tick-ring:#6b6967;
+  }
+}
+* { box-sizing: border-box; }
+html, body { background: transparent; }
+body { margin: 0; background: var(--canvas); color: var(--ink);
+  font-family: "JetBrains Mono","IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 0 20px; }
+a { color: inherit; }
+.ic { width: 12px; height: 12px; flex: 0 0 auto; }
+
+.nav { display: flex; align-items: center; gap: 8px; padding: 8px 0; flex-wrap: wrap; }
+.mark { font-weight: 700; letter-spacing: .06em; font-size: 13px; }
+.tabs { margin-left: auto; display: flex; background: var(--field); border-radius: 8px; padding: 2px; gap: 2px; }
+.tabs button { border: 0; background: none; font-family: inherit; font-size: 12px; color: var(--mute);
+  padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: color .15s, background .15s; }
+.tabs button:hover { color: var(--body); }
+.tabs button.on { background: var(--tile); color: var(--ink); font-weight: 500; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+.tbtn { border: 0; background: var(--field); color: var(--body); font-family: inherit; font-size: 12px;
+  padding: 6px 12px; border-radius: 8px; cursor: pointer; }
+.tbtn.icon-btn { display: inline-flex; align-items: center; gap: 6px; }
+.tbtn.icon-btn .ic { width: 12.5px; height: 12.5px; stroke-width: 2; }
+.tbtn:hover { background: var(--field-hi); color: var(--ink); }
+.tbtn.warn:hover { color: var(--orange-text); }
+.cta { background: var(--ink); color: var(--canvas); padding: 5px 14px; border-radius: 8px;
+  font-size: 12.5px; text-decoration: none; box-shadow: 0 0 0 1px var(--ring); }
+.cta:hover { opacity: .88; }
+
+.bento { display: grid; grid-template-columns: repeat(12, 1fr); gap: 8px; margin: 2px 0 0; }
+.tile { background: var(--tile); border-radius: 12px; padding: 10px 12px; min-width: 0;
+  box-shadow: 0 0 0 1px var(--ring), var(--sh); }
+.tile.done { background: linear-gradient(0deg, var(--wash), var(--wash)), var(--tile); }
+
+.hero { background: var(--hero); color: #f2f2f0; box-shadow: 0 0 0 1px var(--ring);
+  grid-row: 1; grid-column: 1 / span 7; display: flex; flex-direction: column; }
+.hero-top { display: flex; gap: 14px; align-items: center; }
+.hero-right { display: flex; flex-direction: column; gap: 7px; min-width: 0; flex: 1; }
+.hero .chip { align-self: flex-start; font-size: 10.5px; color: #9b9b99; background: var(--hero3);
+  padding: 2px 8px; border-radius: 5px; letter-spacing: .04em; }
+.hero pre.art { margin: 0; font-weight: 700; font-size: clamp(6px, .78vw, 9px);
+  line-height: 1.05; color: #eceae7; white-space: pre; overflow: hidden; flex: 0 0 auto; font-family: "JetBrains Mono","IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace; }
+.prompt { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: var(--hero2);
+  border-radius: 6px; padding: 6px 10px; font-size: 12px; }
+.prompt .car, .prompt .tok { color: #9b9b99; }
+.prompt .cmd { color: #f2f2f0; } .prompt .arg { color: #ffb020; }
+.pbar-wrap { margin: 8px 1px 0; display: flex; align-items: center; gap: 10px; }
+.pbar { flex: 1; height: 6px; border-radius: 4px; background: var(--hero3); overflow: hidden; }
+.pbar i { display: block; height: 100%; width: 0%;
+  background: linear-gradient(90deg,#d93a12 0%,#ff7a1a 35%,#ffb020 70%,#ffd54a 100%);
+  transition: width .35s cubic-bezier(.23,1,.32,1); }
+.pbar-lab { font-size: 11.5px; color: #9b9b99; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.hints { display: flex; gap: 14px; flex-wrap: wrap; font-size: 10px; color: #7c7c7a; margin-top: 6px; }
+.hints span { display: inline-flex; align-items: center; gap: 6px; }
+.hints .ic { width: 11px; height: 11px; color: #9b9b99; }
+
+.stats { grid-row: 1; grid-column: 8 / span 5; display: flex; flex-direction: column; gap: 5px; }
+.stats .big, .streak-col .big { font-size: 28px; font-weight: 700; letter-spacing: -.02em; line-height: 1.1;
+  font-variant-numeric: tabular-nums; margin: 0 0 2px; }
+.stats .big small, .streak-col .big small { font-size: 10.5px; color: var(--mute); font-weight: 400; letter-spacing: .06em; margin-left: 8px; }
+.srow { font-size: 11.5px; color: var(--body); display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.srow span { display: inline-flex; align-items: center; gap: 5px; }
+.srow .ic { width: 12px; height: 12px; color: var(--mute); stroke-width: 2; }
+.srow .sep { color: var(--ash); }
+.stats b, .streak-col b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+.stats .next, .streak-col .next { margin-top: auto; display: flex; align-items: center; gap: 7px; font-size: 11.5px;
+  color: var(--orange-text); background: var(--wash2); border-radius: 8px; padding: 5px 9px; }
+.stats .next .ic, .streak-col .next .ic { width: 12px; height: 12px; stroke-width: 2.2; }
+.stats .next span, .streak-col .next span { display: inline-flex; align-items: center; gap: 7px; }
+
+.sec { display: flex; flex-direction: column; }
+.rows { display: grid; grid-template-columns: minmax(0,1fr); gap: 0 12px; align-content: start; }
+.rows.two { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+.sec-h { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; min-width: 0; }
+.sec-h .code { font-size: 10px; color: var(--body); background: var(--field); border-radius: 5px;
+  padding: 1px 6px; letter-spacing: .05em; flex: 0 0 auto; }
+.sec-h .code.full { background: var(--wash3); color: var(--orange-text); }
+.sec-h .core { font-size: 9px; color: var(--orange-text); background: var(--wash3); border-radius: 5px;
+  padding: 1px 5px; letter-spacing: .06em; flex: 0 0 auto; }
+.sec-h h2 { font-size: 12px; font-weight: 700; margin: 0; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.sec-h .wk { font-size: 10px; color: var(--ash); white-space: nowrap; flex: 0 0 auto; }
+.sec-h .right { margin-left: auto; display: flex; align-items: center; gap: 6px; flex: 0 0 auto; }
+.mini { width: 42px; height: 4px; border-radius: 3px; background: var(--field); overflow: hidden; }
+.mini i { display: block; height: 100%; width: 0%; background: linear-gradient(90deg,#d93a12,#ff7a1a,#ffb020); transition: width .3s; }
+.cnt { font-size: 10px; color: var(--mute); font-variant-numeric: tabular-nums; }
+
+.ch-row { display: grid; grid-template-columns: 14px 20px minmax(0,1fr) minmax(22px,auto) 10px;
+  gap: 6px; align-items: center; padding: 1.5px 5px; border-radius: 6px; cursor: pointer; }
+.ch-row:hover { background: var(--hover); }
+.ch-row:focus-visible, .tick:focus-visible { outline: 1.5px solid var(--orange); outline-offset: 2px; border-radius: 7px; }
+.ch-row.hide { display: none; }
+.tick { width: 14px; height: 14px; border-radius: 4.5px; display: inline-grid; place-items: center;
+  box-shadow: inset 0 0 0 1.5px var(--tick-ring); cursor: pointer;
+  transition: box-shadow .15s, background .15s; }
+.tick:hover { box-shadow: inset 0 0 0 1.5px var(--mute); }
+.tick .ic { width: 8.5px; height: 8.5px; stroke-width: 3.5; color: #fff; opacity: 0; transition: opacity .15s; }
+.ch-row.done .tick { background: linear-gradient(135deg,#ff8a2a,#e0510f); box-shadow: none; }
+.ch-row.done .tick .ic { opacity: 1; }
+.num { font-size: 9px; color: var(--ash); font-variant-numeric: tabular-nums; }
+.ttl { font-size: 11px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ch-row.done .ttl { color: var(--mute); text-decoration: line-through; text-decoration-color: rgba(232,102,26,.6); }
+.hrs { font-size: 9px; color: var(--ash); text-align: right; font-variant-numeric: tabular-nums; }
+.ch-row.done .hrs { color: var(--orange-text); }
+.chev { display: inline-flex; color: var(--ash); transition: transform .15s, color .15s; }
+.chev .ic { width: 10px; height: 10px; stroke-width: 2.4; }
+.ch-row:hover .chev { color: var(--body); transform: translateX(1px); }
+.none { font-size: 10.5px; color: var(--ash); padding: 4px 6px; display: none; }
+.blurb { font-size: 10.5px; color: var(--ash); margin: -1px 2px 6px; line-height: 1.35; }
+
+.s0{grid-row:2;grid-column:1/span 4} .s1{grid-row:2;grid-column:5/span 8}
+.s2{grid-row:3;grid-column:1/span 4} .s3{grid-row:3;grid-column:5/span 8}
+.s4{grid-row:4;grid-column:1/span 8} .s6{grid-row:4;grid-column:9/span 4}
+.s5{grid-row:5;grid-column:1/span 8} .s7{grid-row:5;grid-column:9/span 4}
+
+.mback { position: fixed; inset: 0; background: var(--backdrop); display: none;
+  place-items: center; padding: 20px; z-index: 50; }
+.mback.open { display: grid; }
+.modal { width: min(560px, 94vw); max-height: 82vh; overflow: auto; background: var(--tile);
+  border-radius: 16px; padding: 18px 20px; box-shadow: var(--modal-sh);
+  animation: pop 200ms cubic-bezier(.23,1,.32,1); }
+@keyframes pop { from { transform: scale(.97); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.m-head { display: flex; align-items: center; gap: 8px; font-size: 10.5px; color: var(--mute); letter-spacing: .04em; }
+.m-head .x { margin-left: auto; border: 0; background: var(--field); border-radius: 7px; width: 26px; height: 26px;
+  cursor: pointer; color: var(--body); display: inline-grid; place-items: center; }
+.m-head .x .ic { width: 12px; height: 12px; stroke-width: 2.2; }
+.m-head .x:hover { background: var(--field-hi); color: var(--ink); }
+.modal h3 { margin: 10px 0 6px; font-size: 15px; font-weight: 700; line-height: 1.35; }
+.modal .out { font-size: 12.5px; color: var(--body); margin: 0 0 12px; }
+.links { display: flex; flex-wrap: wrap; gap: 6px; }
+a.lnk { display: inline-flex; align-items: center; gap: 7px; text-decoration: none; background: var(--chip);
+  border-radius: 7px; padding: 4px 10px; font-size: 11.5px; color: var(--ink); box-shadow: 0 0 0 1px var(--ring); }
+a.lnk .ic { width: 11.5px; height: 11.5px; color: var(--mute); stroke-width: 2; }
+a.lnk:hover { background: var(--field); color: var(--orange-text); }
+a.lnk:hover .ic { color: var(--orange-text); }
+.m-foot { margin-top: 14px; display: flex; gap: 8px; }
+.mbtn { border: 0; font-family: inherit; font-size: 12px; padding: 7px 14px; border-radius: 8px;
+  cursor: pointer; background: var(--field); color: var(--body);
+  display: inline-flex; align-items: center; gap: 7px; }
+.mbtn .ic { width: 12.5px; height: 12.5px; stroke-width: 2.4; }
+.mbtn:hover { background: var(--field-hi); color: var(--ink); }
+.mbtn.on { background: var(--wash3); color: var(--orange-text); }
+
+.sunset { height: 6px; border-radius: 3px; margin: 12px 0 0;
+  background: linear-gradient(90deg,#d93a12 0%,#ff7a1a 26%,#ffb020 55%,#ffd54a 78%,var(--stripe-end) 100%); }
+.ft { display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: baseline; padding: 8px 0 14px;
+  font-size: 11px; color: var(--mute); overflow-wrap: anywhere; }
+.ft a { color: var(--body); } .ft .sp { margin-left: auto; }
+
+/* ==== panels ==== */
+.panel[hidden] { display: none; }
+#p-active .ch-row.hide { display: none; }
+.sec.alldone .rows { display: none; }
+.sec.alldone::after { content: "section complete — see syllabus"; display: block; font-size: 10px; color: var(--orange-text); margin: 1px 2px 2px; }
+
+/* ==== activity graph ==== */
+.act-tile { grid-column: 1 / span 12; }
+.act-body { display: flex; gap: 20px; align-items: stretch; }
+.graph-col { flex: 0 0 auto; }
+.streak-col { flex: 1; min-width: 220px; background: var(--field); border-radius: 10px; padding: 10px 14px;
+  display: flex; flex-direction: column; gap: 5px; }
+.graph { display: flex; gap: 6px; margin: 3px 0 5px; }
+.g-days { display: grid; grid-template-rows: repeat(7, 13px); gap: 3px; font-size: 9px; color: var(--ash); text-align: right; }
+.g-days span { height: 13px; line-height: 13px; }
+.g-main { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.g-months { position: relative; font-size: 9px; color: var(--ash); height: 11px; }
+.g-months span { position: absolute; top: 0; white-space: nowrap; }
+.g-grid { display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, 13px); gap: 3px; }
+.g-grid i { width: 13px; height: 13px; border-radius: 3px; }
+.g-grid i.fut { opacity: .38; }
+.g-legend { display: flex; align-items: center; gap: 4px; font-size: 9.5px; color: var(--ash); margin-top: 2px; }
+.g-legend i { width: 10px; height: 10px; border-radius: 2.5px; display: inline-block; }
+.l0 { background: rgba(120,116,112,.28); }
+.l1 { background: rgba(232,102,26,.26); }
+.l2 { background: rgba(232,102,26,.48); }
+.l3 { background: rgba(232,102,26,.7); }
+.l4 { background: #e8661a; }
+
+/* ==== syllabus overview ==== */
+.ov-row + .ov-row { box-shadow: 0 -1px 0 var(--field); }
+.ov-head { display: flex; align-items: center; gap: 7px; padding: 7px 8px; cursor: pointer; border-radius: 8px; }
+.ov-head:hover { background: var(--field); }
+.ov-t { font-size: 12px; font-weight: 500; color: var(--ink); }
+.ov-head .right { margin-left: auto; display: inline-flex; align-items: center; gap: 9px; min-width: 0; }
+.ov-head .chev2 { display: inline-flex; color: var(--ash); transition: transform .18s; }
+.ov-row.open .chev2 { transform: rotate(90deg); }
+.ov-chs { display: none; padding: 1px 8px 9px; }
+.ov-row.open .ov-chs { display: block; }
+
+/* ==== video links + inline player ==== */
+.lnk .vw { font-style: normal; font-size: 9.5px; color: var(--ash); }
+.lnk.von { background: var(--field-hi); color: var(--ink); }
+.m-embed { display: none; margin-top: 10px; border-radius: 10px; overflow: hidden; box-shadow: 0 0 0 1px var(--ring); }
+.m-embed.open { display: block; }
+.m-embed iframe { display: block; width: 100%; aspect-ratio: 16/9; border: 0; }
+
+@media (max-width: 1100px) {
+  .hero { grid-column: span 6; grid-row: auto; } .stats { grid-column: span 6; grid-row: auto; }
+  .s0,.s1,.s2,.s3,.s4,.s5,.s6,.s7 { grid-column: span 6; grid-row: auto; }
+  #bento .rows.two { grid-template-columns: minmax(0,1fr); }
+}
+@media (max-width: 640px) {
+  .s0,.s1,.s2,.s3,.s4,.s5,.s6,.s7 { grid-column: span 12; }
+  .hero, .stats { grid-column: span 12; }
+  .rows.two { grid-template-columns: minmax(0,1fr); }
+  .act-body { flex-direction: column; }
+  .tabs { margin-left: 0; }
+}
+
+/* Shared spacing for the two workspaces; retain the existing Astryx-style controls. */
+.wrap { padding: 0 24px; }
+.nav { padding: 16px 0; gap: 8px; }
+.bento { gap: 12px; margin: 0; align-items: start; }
+.tile { padding: 16px; box-shadow: none; border: 0; }
+.hero, .stats { grid-row: auto; min-height: 154px; align-self: stretch; }
+.hero { grid-column: span 8; justify-content: center; gap: 4px; }
+.stats { grid-column: span 4; gap: 7px; }
+.hero pre.art { font-size: 8px; }
+.hero .chip { line-height: 1.6; }
+.prompt { font-size: 11px; }
+.hints { gap: 12px; line-height: 1.6; }
+.stats .next { margin-top: 4px; padding: 8px 10px; }
+.sec { grid-column: span 6; grid-row: auto; }
+.sec-h { gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+.sec-h h2 { white-space: normal; overflow: visible; flex: 1; }
+.sec-h .wk { color: var(--mute); }
+.sec-h .right { margin-left: auto; }
+.blurb { color: var(--mute); margin: 0 0 10px; }
+#bento .rows.two, .rows.two { grid-template-columns: minmax(0,1fr); }
+.ch-row { min-height: 28px; padding: 5px 4px; gap: 8px; grid-template-columns: 14px 20px minmax(0,1fr) auto 10px; }
+.ttl { white-space: normal; overflow: visible; line-height: 1.5; }
+.num, .hrs { color: var(--mute); }
+.sec.alldone::after { padding: 6px 0; }
+#p-syllabus { display: flex; flex-direction: column; gap: 12px; }
+#p-syllabus[hidden] { display: none; }
+#p-syllabus > .bento:first-child { order: 2; }
+#p-syllabus > .bento:last-child { order: 1; }
+#overview { padding: 16px; }
+.overview-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+.overview-toolbar .sec-h { margin: 0; }
+.overview-caption { font-size: 10.5px; color: var(--mute); margin: 5px 0 0; }
+.filters { display: flex; gap: 2px; background: var(--field); padding: 3px; border-radius: 8px; }
+.filters button { border: 0; border-radius: 6px; background: transparent; color: var(--mute); padding: 6px 10px; font: inherit; font-size: 10.5px; cursor: pointer; }
+.filters button.on { background: var(--tile); color: var(--ink); }
+.ov-row + .ov-row { box-shadow: none; margin-top: 6px; }
+.ov-row { background: var(--canvas); border-radius: 8px; }
+.ov-head { display: grid; grid-template-columns: 42px minmax(0,1fr) 90px; gap: 12px; padding: 12px; }
+.ov-identity { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.ov-title { display: flex; align-items: center; gap: 8px; }
+.ov-t { font-size: 12px; line-height: 1.5; }
+.ov-meta { font-size: 10px; color: var(--mute); line-height: 1.5; }
+.ov-head .code { font-size: 10px; color: var(--mute); align-self: start; padding-top: 2px; }
+.ov-head .right { gap: 8px; margin: 0; justify-content: flex-end; }
+.ov-head .mini { width: 28px; }
+.ov-head .core { font-size: 9px; color: var(--orange-text); }
+.ov-chs { padding: 0 12px 12px 66px; }
+.ov-chs .ch-row { min-height: 32px; }
+.ov-row[hidden], .ov-row .ch-row[hidden] { display: none; }
+.ov-empty { font-size: 11px; color: var(--mute); padding: 12px 0; }
+.act-tile > .sec-h { margin-bottom: 16px; }
+.act-body { gap: 24px; align-items: center; }
+.graph-col { max-width: 100%; overflow-x: auto; padding-bottom: 4px; }
+.graph { width: max-content; }
+.streak-col { background: transparent; padding: 0; gap: 8px; min-width: 0; }
+.streak-col .next { margin-top: 4px; padding: 8px 10px; }
+.sunset { margin-top: 16px; height: 4px; }
+.ft { padding: 12px 0 20px; font-size: 10px; }
+button:focus-visible, .ov-head:focus-visible, .cta:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+@media (max-width: 900px) {
+  .hero, .stats { grid-column: span 12; min-height: auto; }
+  .hero { gap: 8px; }
+  .stats { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); align-items: center; gap: 8px 16px; }
+  .stats .big { grid-row: span 2; }
+  .stats .next { grid-column: span 2; }
+  .sec-h .wk { flex-basis: 100%; order: 5; }
+  .act-body { flex-direction: column; align-items: stretch; }
+  .tabs { margin-left: auto; }
+  .cta { display: none; }
+}
+@media (max-width: 640px) {
+  .wrap { padding: 0 16px; }
+  .nav { gap: 8px; padding: 12px 0; }
+  .mark { width: calc(100% - 44px); }
+  #theme { order: 0; margin-left: auto; }
+  .tabs { order: 1; margin: 0 auto 0 0; }
+  #copy, #reset { order: 2; }
+  .tile { padding: 16px; }
+  .sec { grid-column: span 12; }
+  .hero-top { align-items: flex-start; }
+  .hero pre.art { display: none; }
+  .hero .chip { font-size: 9px; }
+  .prompt { gap: 6px; }
+  .sec-h h2 { font-size: 12px; }
+  .sec-h .wk { flex-basis: auto; }
+  .overview-toolbar { gap: 12px; }
+  .filters { width: 100%; }
+  .filters button { flex: 1; }
+  .ov-head { grid-template-columns: 30px minmax(0,1fr) 42px; gap: 8px; }
+  .ov-head .mini { display: none; }
+  .ov-head .right { gap: 4px; }
+  .ov-chs { padding: 0 8px 12px; }
+  .ov-title { flex-wrap: wrap; gap: 4px; }
+  .ov-t { font-size: 11px; }
+  .ttl { font-size: 11px; }
+  .hrs { max-width: 66px; }
+  .hints { font-size: 9px; }
+  .ft .sp { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+
+.section-board { grid-column: span 12; column-count: 2; column-gap: 12px; }
+.section-board .sec { break-inside: avoid; margin-bottom: 12px; }
+.ch-row { min-height: 24px; padding-top: 3px; padding-bottom: 3px; }
+.hero, .stats { min-height: 132px; }
+.stats { gap: 4px; }
+@media (max-width: 640px) { .section-board { column-count: 1; } .ch-row { min-height: 32px; } }
+
+@media (max-width: 640px) {
+ .nav { display: grid; grid-template-columns: minmax(0,1fr) auto auto; }
+ .mark { width: auto; grid-column: 1 / 3; grid-row: 1; }
+ #theme { grid-column: 3; grid-row: 1; justify-self: end; margin: 0; }
+ .tabs { grid-column: 1; grid-row: 2; margin: 0; justify-self: start; }
+ #copy { grid-column: 2; grid-row: 2; }
+ #reset { grid-column: 3; grid-row: 2; }
+ .tabs button { padding: 5px 9px; }
+ .tbtn { padding: 6px 9px; }
+ .act-tile > .sec-h h2 { flex: 1; white-space: nowrap; }
+ .act-tile > .sec-h .right { flex-basis: 100%; margin-left: 0; justify-content: flex-start; }
+ .act-tile > .sec-h .wk { order: 1; }
+}
+.progress-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:16px}.progress-actions a{text-decoration:none}.progress-actions span{font-size:10px;color:var(--mute)}.lnk{flex-wrap:wrap}.lnk .vw{color:var(--orange-text)}
+</style></head>
+<body><div class="wrap">
+<nav class="nav"><span class="mark">EVALS.PATH</span>
+<span class="tabs" id="tabs" role="tablist" aria-label="Study workspace"><button class="on" data-t="active" role="tab" id="tab-active" aria-controls="bento">active</button><button data-t="syllabus" role="tab" id="tab-syllabus" aria-controls="p-syllabus">syllabus</button></span>
+<button class="tbtn icon-btn" id="copy" data-ic="copy">copy</button>
+<button class="tbtn icon-btn warn" id="reset" data-ic="reset">reset</button>
+<button class="tbtn icon-btn" id="theme" aria-label="theme"></button>
+<a class="cta" href="https://docs.harborframework.com/getting-started/quick-start" target="_blank" rel="noopener">$ uv tool install harbor</a></nav>
+<section class="bento panel" id="bento" data-panel="active" role="tabpanel" aria-labelledby="tab-active">
+  <article class="tile hero">
+    <div class="hero-top">
+      <pre class="art">█████ █   █  ███  █     ████
+█     █   █ █   █ █    █
+████  █   █ █████ █     ███
+█      █ █  █   █ █        █
+█████   █   █   █ █████ ████</pre>
+      <div class="hero-right">
+        <span class="chip">[ evals engineer · 43 chapters · ~302 h · resources audited 17 Oct 2026 ]</span>
+        <div class="prompt"><span class="car">&gt;</span><span class="cmd">harbor study --track</span><span class="arg">evals-engineer</span><span class="tok">[from S0]</span><span class="tok">[target: applied-ai / evals]</span></div>
+      </div>
+    </div>
+    <div class="pbar-wrap"><div class="pbar"><i id="bar"></i></div><span class="pbar-lab" id="barlab">0 / 43</span></div>
+    <div class="hints"><span data-ic="box">tick = done</span><span data-ic="chev">click chapter = details</span><span data-ic="save">saved locally</span><span>esc = close</span></div>
+  </article>
+  <article class="tile stats">
+    <div class="big"><span id="pct">0%</span><small>PATH COMPLETE</small></div>
+    <div class="srow"><span data-ic="check"><b id="s-done">0</b>&nbsp;done</span><span class="sep">·</span><span data-ic="box"><b id="s-left">43</b>&nbsp;to go</span></div>
+    <div class="srow"><span data-ic="clock"><b id="s-h">0 h</b>&nbsp;studied</span><span class="sep">·</span><span><b id="s-total">302 h</b>&nbsp;total</span></div>
+    <div class="srow"><span data-ic="layers"><b id="s-secs">0/9</b>&nbsp;sections complete</span></div>
+    <div class="next" data-ic="arrow"><span id="s-next-t">next: S0 · Orientation</span></div>
+  </article>
+</section>
+<div class="panel" id="p-syllabus" data-panel="syllabus" role="tabpanel" aria-labelledby="tab-syllabus" hidden>
+  <div class="bento">
+    <article class="tile act-tile">
+      <div class="sec-h"><span class="code">[activity]</span><h2>Study activity</h2><span class="wk" id="g-range">last 26 weeks</span>
+        <span class="right"><span class="cnt" id="st-mini">0 done · 0 h</span></span></div>
+      <div class="act-body">
+        <div class="graph-col">
+          <div class="graph" id="graph"></div>
+          <div class="g-legend"><span>less</span><i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i><span>more</span></div>
+        </div>
+        <div class="streak-col" id="streak-box">
+          <div class="big"><span id="st-cur">0</span><small>DAY STREAK</small></div>
+          <div class="srow"><span data-ic="flame"><b id="st-best">0</b>&nbsp;best streak</span><span class="sep">·</span><span data-ic="box"><b id="st-days">0</b>&nbsp;active days</span></div>
+          <div class="srow"><span data-ic="check"><b id="st-done">0</b>&nbsp;chapters done</span><span class="sep">·</span><span data-ic="clock"><b id="st-h">0 h</b>&nbsp;studied</span></div>
+          <div class="next" data-ic="arrow"><span id="st-next">tick chapters in the active tab to build your streak</span></div>
+        </div>
+      </div>
+    </article>
+  </div>
+  <div class="bento">
+    <article class="tile" id="overview" style="grid-column:span 12"></article>
+  </div>
+</div>
+<div class="progress-actions"><a class="tbtn" href="audit.html">resource scores & hiring alignment ↗</a><button class="tbtn icon-btn" id="export-progress">export progress</button><button class="tbtn icon-btn" id="import-progress">import progress</button><input id="progress-file" type="file" accept="application/json,.json" hidden><span id="progress-message" role="status"></span></div><div class="sunset"></div>
+<footer class="ft"><span>©2026 evals.path</span><span>bento tracker for the Harbor path — progress stored locally</span>
+<span class="sp">docs mcp: <a href="https://docs.harborframework.com/mcp" target="_blank" rel="noopener">docs.harborframework.com/mcp</a></span></footer>
+</div>
+<div class="mback" id="mback"><div class="modal" id="modal">
+  <div class="m-head"><span id="m-code">[S0 · 01/39]</span><span id="m-h">2 h</span><button class="x" id="m-x" data-ic="x" aria-label="close"></button></div>
+  <h3 id="m-title"></h3><p class="out" id="m-out"></p><div class="links" id="m-links"></div>
+  <div class="m-embed" id="m-embed"></div>
+  <div class="m-foot"><button class="mbtn" id="m-toggle"></button></div>
+</div></div>
+<script>
+let M = null;
+import("https://cdn.jsdelivr.net/npm/motion@12/+esm").then(m => { M = m; console.log("motion ready — animations on"); runIntro(); }).catch(() => {});
+function am(el, kf, opts){ if (!M || matchMedia("(prefers-reduced-motion: reduce)").matches) return null; try { const a = M.animate(el, kf, opts); const list = Array.isArray(el) ? el : [el]; setTimeout(() => list.forEach(x => { try { x.getAnimations().forEach(an => an.cancel()); } catch (e) {} }), opts && opts.delay ? 4200 : 1800); return a; } catch (e) { return null; } }
+const IC = {
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  x: '<path d="M18 6 6 18M6 6l12 12"/>',
+  copy: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+  reset: '<path d="M3 4v6h6"/><path d="M3.5 15a9 9 0 1 0 2-9.4L3 10"/>',
+  chev: '<path d="M9 6l6 6-6 6"/>',
+  box: '<rect x="4.5" y="4.5" width="15" height="15" rx="4.5"/>',
+  clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  layers: '<path d="M12 2 2 7l10 5 10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>',
+  arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+  save: '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/>',
+  monitor: '<rect x="2" y="3.5" width="20" height="13" rx="2.5"/><path d="M8 20.5h8M12 16.5v4"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon: '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
+  flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+  docs: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/>',
+  video: '<circle cx="12" cy="12" r="9"/><path d="M10 8.5l6 3.5-6 3.5z"/>',
+  paper: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>',
+  repo: '<circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><path d="M6 8.5v7"/><circle cx="18" cy="8" r="2.5"/><path d="M18 10.5c0 3-2.2 4.5-6 4.5H8.5"/>',
+  course: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+  blog: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  tool: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9z"/>'
+};
+function ic(name, cls){
+  return '<svg class="ic ' + (cls || '') + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + IC[name] + '</svg>';
+}
+document.querySelectorAll("[data-ic]").forEach(el => { el.innerHTML = ic(el.dataset.ic) + el.innerHTML; });
+
+const RESOURCE_AUDIT = {"https://docs.harborframework.com/":{"score":7.6,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/core-concepts":{"score":8.6,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://arxiv.org/abs/2601.11868":{"score":8.8,"action":"Core","evidence":"Abstract and primary landing page; no independent reproduction"},"https://www.tbench.ai/":{"score":6.9,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://inspect.aisi.org.uk/":{"score":9.8,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://github.com/EleutherAI/lm-evaluation-harness":{"score":8.4,"action":"Specialist","evidence":"Primary page / README reviewed; examples not executed"},"https://github.com/openai/evals":{"score":7.2,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://crfm.stanford.edu/helm/":{"score":6.6,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://github.com/openai/simple-evals":{"score":7.4,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://github.com/huggingface/lighteval":{"score":8,"action":"Specialist","evidence":"Primary page / README reviewed; examples not executed"},"https://www.swebench.com/":{"score":8.4,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://os-world.github.io/":{"score":7.8,"action":"Specialist","evidence":"Primary page / README reviewed; examples not executed"},"https://webarena.dev/":{"score":7.5,"action":"Specialist","evidence":"Primary page / README reviewed; examples not executed"},"https://github.com/sierra-research/tau-bench":{"score":6.8,"action":"Replace","evidence":"Primary page / README reviewed; examples not executed"},"https://huggingface.co/datasets/gaia-benchmark/GAIA":{"score":6.2,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://aider.chat/docs/leaderboards/":{"score":5,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.python.org/3/tutorial/":{"score":8.7,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.python.org/3/library/asyncio.html":{"score":9.8,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.astral.sh/uv/":{"score":9,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://www.youtube.com/watch?v=rfscVS0vtbw":{"score":4.9,"action":"Optional","evidence":"Transcript sampled + metadata"},"https://www.youtube.com/watch?v=x7X9w_GIm1s":{"score":3.2,"action":"Skip","evidence":"Transcript sampled + metadata"},"https://missing.csail.mit.edu/":{"score":8.7,"action":"Core","evidence":"Public syllabus / page reviewed; exercises and paid delivery not completed"},"https://missing.csail.mit.edu/2020/shell-tools/":{"score":8.7,"action":"Core","evidence":"Public syllabus / page reviewed; exercises and paid delivery not completed"},"https://www.youtube.com/playlist?list=PLyzOVJj3bHQuloKGG59rS43e29ro7I57J":{"score":6.7,"action":"Optional","evidence":"Playlist first item sampled; full playlist not reviewed"},"https://www.youtube.com/watch?v=Z56Jmr9Z34Q":{"score":7.7,"action":"Optional","evidence":"Transcript sampled + metadata"},"https://git-scm.com/book/en/v2":{"score":8.7,"action":"Reference","evidence":"Public syllabus / page reviewed; exercises and paid delivery not completed"},"https://missing.csail.mit.edu/2020/version-control/":{"score":8,"action":"Core","evidence":"Public syllabus / page reviewed; exercises and paid delivery not completed"},"https://www.youtube.com/watch?v=RGOj5yH7evk":{"score":6.7,"action":"Optional","evidence":"Transcript sampled + metadata"},"https://docs.docker.com/get-started/":{"score":9.6,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://docker-curriculum.com/":{"score":8.5,"action":"Optional","evidence":"Public syllabus / page reviewed; exercises and paid delivery not completed"},"https://github.com/harbor-framework/harbor-cookbook/tree/main/harbor_cookbook/recipes":{"score":9.4,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://www.youtube.com/watch?v=fqMOX6JJhGo":{"score":6.6,"action":"Optional","evidence":"Transcript sampled + metadata"},"https://docs.pytest.org/en/stable/":{"score":10,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/rewardkit/quick-start":{"score":9.6,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/rewardkit/built-in-criteria":{"score":9.4,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://www.youtube.com/watch?v=cHYq1MRoyI0":{"score":8,"action":"Optional","evidence":"Metadata / syllabus only; provisional"},"https://platform.openai.com/docs/guides/function-calling":{"score":9.4,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://modelcontextprotocol.io/introduction":{"score":7.6,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://toml.io/en/":{"score":6.8,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://www.youtube.com/watch?v=zjkBMFhNj_g":{"score":6.1,"action":"Optional","evidence":"Transcript sampled + metadata"},"https://www.youtube.com/watch?v=7xTGNNLPyMI":{"score":7.9,"action":"Core","evidence":"Transcript sampled + metadata"},"https://www.youtube.com/watch?v=kCc8FmEb1nY":{"score":7.6,"action":"Specialist","evidence":"Metadata / syllabus only; provisional"},"https://jalammar.github.io/illustrated-transformer/":{"score":6.5,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://tiktokenizer.vercel.app/":{"score":5.6,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://rlhfbook.com/":{"score":8.7,"action":"Specialist","evidence":"Public syllabus / page reviewed; exercises and paid delivery not completed"},"https://huggingface.co/blog/rlhf":{"score":6.1,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://huggingface.co/docs/trl/index":{"score":9.2,"action":"Specialist","evidence":"Primary page / README reviewed; examples not executed"},"https://databricks.com/blog/llm-inference-performance-engineering-best-practices":{"score":6.1,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://kipp.ly/transformer-inference-arithmetic/":{"score":7,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://www.anthropic.com/engineering/building-effective-agents":{"score":9.2,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents":{"score":9.5,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://www.anthropic.com/engineering/writing-tools-for-agents":{"score":10,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://github.com/humanlayer/12-factor-agents":{"score":8.3,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf":{"score":7.5,"action":"Reference","evidence":"Abstract and primary landing page; no independent reproduction"},"https://www.youtube.com/watch?v=LCEmiRjPEtQ":{"score":5.1,"action":"Optional","evidence":"Metadata / syllabus only; provisional"},"https://hamel.dev/blog/posts/field-guide/":{"score":9.5,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://hamel.dev/blog/posts/evals/":{"score":9.7,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://www.youtube.com/watch?v=uiza7wp1KrE":{"score":9.1,"action":"Core","evidence":"Transcript sampled + metadata"},"https://maven.com/parlance-labs/evals":{"score":8.5,"action":"Optional","evidence":"Public syllabus / page reviewed; exercises and paid delivery not completed"},"https://eugeneyan.com/writing/evals/":{"score":9,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://eugeneyan.com/writing/product-evals/":{"score":10,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.langchain.com/langsmith/evaluation":{"score":9.4,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://arxiv.org/abs/2310.06770":{"score":8.5,"action":"Core","evidence":"Abstract and primary landing page; no independent reproduction"},"https://scale.com/blog/swe-bench-pro":{"score":7.8,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://epoch.ai/benchmarks":{"score":6.5,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/tasks/verifier":{"score":10,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/tasks/separate-verifier":{"score":9.8,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/tutorials/create-a-verifier-with-rewardkit":{"score":9.6,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://arxiv.org/abs/2306.05685":{"score":7.6,"action":"Reference","evidence":"Abstract and primary landing page; no independent reproduction"},"https://arxiv.org/abs/2303.16634":{"score":6.4,"action":"Reference","evidence":"Abstract and primary landing page; no independent reproduction"},"https://eugeneyan.com/writing/llm-evaluators/":{"score":9.2,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/rewardkit/judge-criteria":{"score":9.4,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://arxiv.org/abs/2411.00640":{"score":9,"action":"Core","evidence":"Abstract and primary landing page; no independent reproduction"},"https://www.anthropic.com/research/statistical-approach-to-model-evals":{"score":9.2,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://arxiv.org/abs/2107.03374":{"score":7.4,"action":"Reference","evidence":"Abstract and primary landing page; no independent reproduction"},"https://docs.harborframework.com/jobs/loading-trajectories":{"score":7,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/agents/atif":{"score":9.4,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://www.youtube.com/watch?v=zt-U4lDdenY":{"score":7.5,"action":"Optional","evidence":"Transcript sampled + metadata"},"https://docs.harborframework.com/getting-started/installation":{"score":8.6,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/getting-started/quick-start":{"score":9.6,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/jobs/run-a-job":{"score":9.4,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/results/view-job-results":{"score":9.4,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://www.youtube.com/watch?v=3Hggv3abkmI":{"score":9.1,"action":"Core","evidence":"Transcript sampled + metadata"},"https://docs.harborframework.com/tasks/overview":{"score":9.1,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/tutorials/create-a-task":{"score":10,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/tasks/configuration":{"score":9.4,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/tasks/environment":{"score":9.4,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/tasks/instruction":{"score":8.9,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/news/separate-verifier-sandboxes":{"score":6.5,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/jobs/regrade":{"score":8.8,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/tasks/artifacts":{"score":9.4,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/datasets/datasets":{"score":8.3,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/datasets/create-a-dataset":{"score":9.6,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/datasets/git-repos":{"score":8.8,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/datasets/registries":{"score":8.3,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/datasets/metrics":{"score":9.4,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/agents/pre-integrated-agents":{"score":8.8,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/agents/custom-agents":{"score":9.4,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://www.youtube.com/watch?v=Rh6KWngr8T4":{"score":9.1,"action":"Core","evidence":"Transcript sampled + metadata"},"https://docs.harborframework.com/sandboxes/pre-integrated-sandboxes":{"score":9.4,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/sandboxes/custom-sandboxes":{"score":8.6,"action":"Specialist","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/tasks/network-policies":{"score":9.8,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/jobs/environment-variables":{"score":7.3,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://modal.com/docs/guide/sandbox":{"score":9.8,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://daytona.io/docs":{"score":8.8,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/jobs/configs":{"score":8.8,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/jobs/error-classification":{"score":8.9,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/jobs/artifact-collection":{"score":9.4,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/jobs/stream":{"score":7.3,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/telemetry/telemetry":{"score":3.8,"action":"Replace","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/tutorials/create-a-multi-container-task":{"score":9.4,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/jobs/simulate-a-user":{"score":9.4,"action":"Specialist","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/news/multi-step-tasks":{"score":6.7,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/harbor-hub/publish":{"score":8.4,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/harbor-hub/leaderboards":{"score":8.3,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://hub.harborframework.com/":{"score":6.1,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/news/harbor-registry":{"score":5.9,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/news/job-result-sharing":{"score":5.9,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://spinningup.openai.com/en/latest/":{"score":6.8,"action":"Specialist","evidence":"Public syllabus / page reviewed; exercises and paid delivery not completed"},"https://gymnasium.farama.org/":{"score":9.2,"action":"Specialist","evidence":"Primary page / README reviewed; examples not executed"},"https://huggingface.co/learn/deep-rl-course/unit0/introduction":{"score":6.4,"action":"Optional","evidence":"Public syllabus / page reviewed; exercises and paid delivery not completed"},"https://verl.readthedocs.io/en/latest/":{"score":9,"action":"Specialist","evidence":"Primary page / README reviewed; examples not executed"},"https://github.com/harbor-framework/harbor-cookbook/tree/main/harbor_cookbook/harbor_rl":{"score":8.6,"action":"Specialist","evidence":"Primary page / README reviewed; examples not executed"},"https://github.com/PrimeIntellect-ai/verifiers":{"score":9.8,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.primeintellect.ai/tutorials-environments/environments":{"score":9.4,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.primeintellect.ai/prime-rl":{"score":8.6,"action":"Specialist","evidence":"Primary page / README reviewed; examples not executed"},"https://github.com/thinking-machines-lab/tinker":{"score":7.5,"action":"Specialist","evidence":"Primary page / README reviewed; examples not executed"},"https://github.com/gepa-ai/gepa":{"score":9.2,"action":"Specialist","evidence":"Primary page / README reviewed; examples not executed"},"https://github.com/harbor-framework/harbor-cookbook/tree/main/harbor_cookbook/gepa":{"score":8.8,"action":"Specialist","evidence":"Primary page / README reviewed; examples not executed"},"https://github.com/stanfordmlgroup/MedAgentBench":{"score":7.2,"action":"Specialist","evidence":"Primary page / README reviewed; examples not executed"},"https://metr.org/blog/2025-06-05-recent-reward-hacking/":{"score":8.7,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://arxiv.org/abs/2601.20103":{"score":7.6,"action":"Specialist","evidence":"Abstract and primary landing page; no independent reproduction"},"https://arxiv.org/abs/2505.08638":{"score":8.5,"action":"Core","evidence":"Abstract and primary landing page; no independent reproduction"},"https://arxiv.org/abs/2503.11926":{"score":7.7,"action":"Specialist","evidence":"Abstract and primary landing page; no independent reproduction"},"https://arxiv.org/abs/2311.09783":{"score":7.6,"action":"Reference","evidence":"Abstract and primary landing page; no independent reproduction"},"https://arxiv.org/abs/2404.00699":{"score":7.2,"action":"Reference","evidence":"Abstract and primary landing page; no independent reproduction"},"https://metr.org/blog/2025-03-19-measuring-ai-ability-to-complete-long-tasks/":{"score":8.5,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/hosted-harbor/index":{"score":7.1,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://docs.harborframework.com/plugins/custom-plugins":{"score":8.6,"action":"Specialist","evidence":"Primary page / README reviewed; examples not executed"},"https://github.com/harbor-framework/harbor/blob/main/CONTRIBUTING.md":{"score":9.1,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://github.com/harbor-framework/harbor/blob/main/adapters/ADAPTER_CONTRIBUTING.md":{"score":9.8,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://github.com/harbor-framework/harbor/tree/main/adapters":{"score":8.1,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://github.com/harbor-framework/harbor-cookbook":{"score":9.6,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://frontierlist.com/":{"score":5.6,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://pavlovslist.com/":{"score":7.4,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://breakoutlist.com/":{"score":4.8,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://www.tbench.ai/leaderboard":{"score":5.6,"action":"Reference","evidence":"Primary page / README reviewed; examples not executed"},"https://surgehq.ai/careers":{"score":7.5,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://scale.com/careers":{"score":6.7,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://snorkel.ai/careers/":{"score":6.7,"action":"Core","evidence":"Primary page / README reviewed; examples not executed"},"https://patronus.ai/careers":{"score":4.1,"action":"Replace","evidence":"Primary page / README reviewed; examples not executed"}};
+const DATA = [
+  {
+    "c": "S0",
+    "t": "Orientation",
+    "wk": "Week 0",
+    "bl": "Two days to see the whole board.",
+    "chs": [
+      {
+        "t": "The job, and Harbor's vocabulary",
+        "h": 2,
+        "o": "You can describe the loop an evals team runs — task → dataset → job → trajectory → reward → leaderboard → RL — and where your work fits in it.",
+        "l": [
+          [
+            "Harbor docs",
+            "https://docs.harborframework.com/",
+            "docs"
+          ],
+          [
+            "Core concepts",
+            "https://docs.harborframework.com/core-concepts",
+            "docs"
+          ],
+          [
+            "Terminal-Bench paper (ICLR 2026)",
+            "https://arxiv.org/abs/2601.11868",
+            "paper"
+          ],
+          [
+            "Terminal-Bench site",
+            "https://www.tbench.ai/",
+            "tool"
+          ]
+        ]
+      },
+      {
+        "t": "The framework landscape",
+        "h": 3,
+        "o": "You can place any eval request against the right harness — Harbor, Inspect, lm-evaluation-harness, OpenAI Evals, HELM, lighteval — and know what problem each one actually solves.",
+        "l": [
+          [
+            "Inspect (UK AISI)",
+            "https://inspect.aisi.org.uk/",
+            "docs"
+          ],
+          [
+            "lm-evaluation-harness",
+            "https://github.com/EleutherAI/lm-evaluation-harness",
+            "repo"
+          ],
+          [
+            "OpenAI Evals",
+            "https://github.com/openai/evals",
+            "repo"
+          ],
+          [
+            "HELM (Stanford CRFM)",
+            "https://crfm.stanford.edu/helm/",
+            "tool"
+          ],
+          [
+            "simple-evals",
+            "https://github.com/openai/simple-evals",
+            "repo"
+          ],
+          [
+            "LightEval",
+            "https://github.com/huggingface/lighteval",
+            "repo"
+          ]
+        ]
+      },
+      {
+        "t": "The benchmarks that matter",
+        "h": 2,
+        "o": "You can say what each headline benchmark measures, how it is graded, and its known blind spots — the difference between reading a leaderboard and trusting one.",
+        "l": [
+          [
+            "SWE-bench",
+            "https://www.swebench.com/",
+            "tool"
+          ],
+          [
+            "OSWorld",
+            "https://os-world.github.io/",
+            "tool"
+          ],
+          [
+            "WebArena",
+            "https://webarena.dev/",
+            "tool"
+          ],
+          [
+            "τ³-bench (maintained successor)",
+            "https://github.com/sierra-research/tau2-bench",
+            "repo"
+          ],
+          [
+            "GAIA",
+            "https://huggingface.co/datasets/gaia-benchmark/GAIA",
+            "tool"
+          ],
+          [
+            "Aider polyglot leaderboard",
+            "https://aider.chat/docs/leaderboards/",
+            "tool"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "c": "S1",
+    "t": "Builder foundations",
+    "wk": "Weeks 1–3",
+    "bl": "The unglamorous 20%.",
+    "chs": [
+      {
+        "t": "Python for eval harnesses",
+        "h": 8,
+        "o": "You can write a runner that launches dozens of subprocesses concurrently, enforces timeouts, and collects structured results without leaking processes.",
+        "l": [
+          [
+            "Python tutorial",
+            "https://docs.python.org/3/tutorial/",
+            "docs"
+          ],
+          [
+            "asyncio",
+            "https://docs.python.org/3/library/asyncio.html",
+            "docs"
+          ],
+          [
+            "uv (package/tool runner)",
+            "https://docs.astral.sh/uv/",
+            "tool"
+          ],
+          [
+            "Optional beginner Python course (2018)",
+            "https://www.youtube.com/watch?v=rfscVS0vtbw",
+            "video"
+          ]
+        ]
+      },
+      {
+        "t": "Shell and Linux inside containers",
+        "h": 6,
+        "o": "You can find your way around a bare container — pipes, environment variables, permissions, processes — the same environment every agent task runs in.",
+        "l": [
+          [
+            "Missing Semester (MIT)",
+            "https://missing.csail.mit.edu/",
+            "course"
+          ],
+          [
+            "Shell tools and scripting",
+            "https://missing.csail.mit.edu/2020/shell-tools/",
+            "course"
+          ],
+          [
+            "Missing Semester playlist",
+            "https://www.youtube.com/playlist?list=PLyzOVJj3bHQuloKGG59rS43e29ro7I57J",
+            "video"
+          ],
+          [
+            "Missing Semester L1: the shell",
+            "https://www.youtube.com/watch?v=Z56Jmr9Z34Q",
+            "video"
+          ]
+        ]
+      },
+      {
+        "t": "Git and pull-request workflow",
+        "h": 4,
+        "o": "You can branch, rebase, and open a clean PR that passes review — the same motion you will use to contribute tasks to a public registry.",
+        "l": [
+          [
+            "Pro Git (free book)",
+            "https://git-scm.com/book/en/v2",
+            "course"
+          ],
+          [
+            "Version control (Missing Semester)",
+            "https://missing.csail.mit.edu/2020/version-control/",
+            "course"
+          ],
+          [
+            "freeCodeCamp: Git & GitHub crash course",
+            "https://www.youtube.com/watch?v=RGOj5yH7evk",
+            "video"
+          ]
+        ]
+      },
+      {
+        "t": "Docker and the sandbox boundary",
+        "h": 8,
+        "o": "You can author Dockerfiles and compose setups that make a task deterministic and isolated, and explain why the sandbox is the real security boundary of an agent eval.",
+        "l": [
+          [
+            "Docker: get started",
+            "https://docs.docker.com/get-started/",
+            "docs"
+          ],
+          [
+            "Docker curriculum",
+            "https://docker-curriculum.com/",
+            "course"
+          ],
+          [
+            "Harbor cookbook recipes",
+            "https://github.com/harbor-framework/harbor-cookbook/tree/main/harbor_cookbook/recipes",
+            "repo"
+          ],
+          [
+            "Optional Docker foundations (2019; use current docs for commands)",
+            "https://www.youtube.com/watch?v=fqMOX6JJhGo",
+            "video"
+          ]
+        ]
+      },
+      {
+        "t": "pytest and graders that don't flake",
+        "h": 5,
+        "o": "You can turn a written requirement into deterministic pass/fail and scored checks, including artifact inspection and partial credit.",
+        "l": [
+          [
+            "pytest docs",
+            "https://docs.pytest.org/en/stable/",
+            "docs"
+          ],
+          [
+            "RewardKit quick start",
+            "https://docs.harborframework.com/rewardkit/quick-start",
+            "docs"
+          ],
+          [
+            "RewardKit built-in criteria",
+            "https://docs.harborframework.com/rewardkit/built-in-criteria",
+            "docs"
+          ],
+          [
+            "freeCodeCamp: Pytest tutorial",
+            "https://www.youtube.com/watch?v=cHYq1MRoyI0",
+            "video"
+          ]
+        ]
+      },
+      {
+        "t": "APIs, HTTP and structured data",
+        "h": 5,
+        "o": "You can call model and tool APIs correctly under retries, rate limits and streaming, and emit JSON / TOML / YAML that downstream tooling can parse.",
+        "l": [
+          [
+            "Function calling (OpenAI)",
+            "https://platform.openai.com/docs/guides/function-calling",
+            "docs"
+          ],
+          [
+            "Model Context Protocol",
+            "https://modelcontextprotocol.io/introduction",
+            "docs"
+          ],
+          [
+            "TOML spec",
+            "https://toml.io/en/",
+            "docs"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "c": "S2",
+    "t": "LLM fundamentals",
+    "wk": "Weeks 2–6",
+    "bl": "Why tasks fail.",
+    "chs": [
+      {
+        "t": "How LLMs actually work",
+        "h": 10,
+        "o": "You can explain tokenization, attention, and sampling parameters, and predict which knobs affect eval variance before blaming the model.",
+        "l": [
+          [
+            "Intro to LLMs (Karpathy)",
+            "https://www.youtube.com/watch?v=zjkBMFhNj_g",
+            "video"
+          ],
+          [
+            "Deep Dive into LLMs (Karpathy)",
+            "https://www.youtube.com/watch?v=7xTGNNLPyMI",
+            "video"
+          ],
+          [
+            "Optional research depth: build GPT from scratch",
+            "https://www.youtube.com/watch?v=kCc8FmEb1nY",
+            "video"
+          ],
+          [
+            "The Illustrated Transformer",
+            "https://jalammar.github.io/illustrated-transformer/",
+            "blog"
+          ],
+          [
+            "tiktokenizer",
+            "https://tiktokenizer.vercel.app/",
+            "tool"
+          ]
+        ]
+      },
+      {
+        "t": "Training and post-training",
+        "h": 8,
+        "o": "You can describe SFT, preference tuning and RLVR stages, and say what each one implies about what your evals should probe next.",
+        "l": [
+          [
+            "The RLHF Book (Lambert)",
+            "https://rlhfbook.com/",
+            "course"
+          ],
+          [
+            "Illustrated RLHF",
+            "https://huggingface.co/blog/rlhf",
+            "blog"
+          ],
+          [
+            "TRL docs",
+            "https://huggingface.co/docs/trl/index",
+            "docs"
+          ]
+        ]
+      },
+      {
+        "t": "Inference economics and scale",
+        "h": 5,
+        "o": "You can estimate cost, latency and concurrency per trial before committing to a 1,000-trial run — and know where caching and batching save money.",
+        "l": [
+          [
+            "LLM inference performance engineering",
+            "https://databricks.com/blog/llm-inference-performance-engineering-best-practices",
+            "blog"
+          ],
+          [
+            "Transformer inference arithmetic",
+            "https://kipp.ly/transformer-inference-arithmetic/",
+            "blog"
+          ]
+        ]
+      },
+      {
+        "t": "Agents, tools, context engineering",
+        "h": 8,
+        "o": "You can build a small tool-using agent and name the design surfaces you will later grade: tool descriptions, context layout, loops, memory, permissioning.",
+        "l": [
+          [
+            "Building effective agents (Anthropic)",
+            "https://www.anthropic.com/engineering/building-effective-agents",
+            "blog"
+          ],
+          [
+            "Effective context engineering",
+            "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents",
+            "blog"
+          ],
+          [
+            "Writing effective tools for agents",
+            "https://www.anthropic.com/engineering/writing-tools-for-agents",
+            "blog"
+          ],
+          [
+            "12-Factor Agents",
+            "https://github.com/humanlayer/12-factor-agents",
+            "repo"
+          ],
+          [
+            "A practical guide to building agents (OpenAI)",
+            "https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf",
+            "paper"
+          ],
+          [
+            "Optional context: Software Is Changing (Again)",
+            "https://www.youtube.com/watch?v=LCEmiRjPEtQ",
+            "video"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "c": "S3",
+    "t": "Evals thinking",
+    "wk": "Weeks 4–9",
+    "bl": "The discipline under the tooling.",
+    "chs": [
+      {
+        "t": "Error analysis before metrics",
+        "h": 6,
+        "o": "Given 50 traces, you can run open coding, produce a failure taxonomy, and rank fixes by frequency — before writing a single metric.",
+        "l": [
+          [
+            "A Field Guide to Rapidly Improving AI Products",
+            "https://hamel.dev/blog/posts/field-guide/",
+            "blog"
+          ],
+          [
+            "Your AI product needs evals",
+            "https://hamel.dev/blog/posts/evals/",
+            "blog"
+          ],
+          [
+            "AI Evaluations Clearly Explained (Hamel)",
+            "https://www.youtube.com/watch?v=uiza7wp1KrE",
+            "video"
+          ],
+          [
+            "AI Evals for Engineers and PMs (course)",
+            "https://maven.com/parlance-labs/evals",
+            "course"
+          ]
+        ]
+      },
+      {
+        "t": "Eval taxonomy and the dev loop",
+        "h": 6,
+        "o": "You can choose unit / integration / online evals per stage of a product, and design the loop where failing evals become fixed behavior, not backlog.",
+        "l": [
+          [
+            "Task-specific evals that do and don't work",
+            "https://eugeneyan.com/writing/evals/",
+            "blog"
+          ],
+          [
+            "Product evals in three simple steps",
+            "https://eugeneyan.com/writing/product-evals/",
+            "blog"
+          ],
+          [
+            "LangSmith evaluation concepts",
+            "https://docs.langchain.com/langsmith/evaluation",
+            "docs"
+          ],
+          [
+            "Demystifying evals for AI agents",
+            "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+            "blog"
+          ]
+        ]
+      },
+      {
+        "t": "Designing a benchmark",
+        "h": 8,
+        "o": "You can spec a suite with deliberate coverage and difficulty, write tasks that discriminate between models, and anticipate saturation and leakage.",
+        "l": [
+          [
+            "Terminal-Bench paper",
+            "https://arxiv.org/abs/2601.11868",
+            "paper"
+          ],
+          [
+            "SWE-bench paper",
+            "https://arxiv.org/abs/2310.06770",
+            "paper"
+          ],
+          [
+            "SWE-bench Pro (Scale)",
+            "https://scale.com/blog/swe-bench-pro",
+            "blog"
+          ],
+          [
+            "Epoch AI benchmarks hub",
+            "https://epoch.ai/benchmarks",
+            "tool"
+          ]
+        ]
+      },
+      {
+        "t": "Verifiers and reward design",
+        "h": 8,
+        "o": "You can convert a task into a graded verifier — programmatic checks plus judge criteria — with partial credit and checks that survive optimization pressure.",
+        "l": [
+          [
+            "Verifier (Harbor)",
+            "https://docs.harborframework.com/tasks/verifier",
+            "docs"
+          ],
+          [
+            "Separate verifier sandbox",
+            "https://docs.harborframework.com/tasks/separate-verifier",
+            "docs"
+          ],
+          [
+            "Build a verifier with RewardKit",
+            "https://docs.harborframework.com/tutorials/create-a-verifier-with-rewardkit",
+            "docs"
+          ]
+        ]
+      },
+      {
+        "t": "Judges and rubrics",
+        "h": 6,
+        "o": "You can write judge prompts and rubrics, measure agreement with human labels, and control position and length bias.",
+        "l": [
+          [
+            "Judging LLM-as-a-Judge (MT-Bench)",
+            "https://arxiv.org/abs/2306.05685",
+            "paper"
+          ],
+          [
+            "G-Eval",
+            "https://arxiv.org/abs/2303.16634",
+            "paper"
+          ],
+          [
+            "Evaluating LLM-evaluators",
+            "https://eugeneyan.com/writing/llm-evaluators/",
+            "blog"
+          ],
+          [
+            "Judge criteria (RewardKit)",
+            "https://docs.harborframework.com/rewardkit/judge-criteria",
+            "docs"
+          ]
+        ]
+      },
+      {
+        "t": "Statistical rigor",
+        "h": 6,
+        "o": "You can put error bars on a leaderboard row, size a run before launching it, report pass@k, and flag tasks that are too flaky to trust.",
+        "l": [
+          [
+            "Adding error bars to evals",
+            "https://arxiv.org/abs/2411.00640",
+            "paper"
+          ],
+          [
+            "A statistical approach to model evals (Anthropic)",
+            "https://www.anthropic.com/research/statistical-approach-to-model-evals",
+            "blog"
+          ],
+          [
+            "pass@k (Codex)",
+            "https://arxiv.org/abs/2107.03374",
+            "paper"
+          ]
+        ]
+      },
+      {
+        "t": "Trajectory analysis",
+        "h": 6,
+        "o": "You can parse and review trajectories, label a failure taxonomy, distinguish tool/environment failures from reasoning failures, and turn one observed failure into a regression test. Loading a session is a separate operation.",
+        "l": [
+          [
+            "Loading trajectories (Harbor)",
+            "https://docs.harborframework.com/jobs/loading-trajectories",
+            "docs"
+          ],
+          [
+            "ATIF trajectory format",
+            "https://docs.harborframework.com/agents/atif",
+            "docs"
+          ],
+          [
+            "Evaluating LLM agents in terminal settings",
+            "https://www.youtube.com/watch?v=zt-U4lDdenY",
+            "video"
+          ],
+          [
+            "Demystifying evals for AI agents",
+            "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+            "blog"
+          ],
+          [
+            "Instrument application traces with OpenTelemetry",
+            "https://opentelemetry.io/docs/languages/python/instrumentation/",
+            "docs"
+          ],
+          [
+            "Trace issue localization: TRAIL",
+            "https://arxiv.org/abs/2505.08638",
+            "paper"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "c": "S4",
+    "t": "Harbor in depth",
+    "wk": "Weeks 6–13",
+    "bl": "The centerpiece.",
+    "chs": [
+      {
+        "t": "Install and first jobs",
+        "h": 4,
+        "o": "You have Harbor installed, hello-world and Terminal-Bench 2.0 run locally with two different agents, and you can view and upload the results.",
+        "l": [
+          [
+            "Installation",
+            "https://docs.harborframework.com/getting-started/installation",
+            "docs"
+          ],
+          [
+            "Quick start",
+            "https://docs.harborframework.com/getting-started/quick-start",
+            "docs"
+          ],
+          [
+            "Run a job",
+            "https://docs.harborframework.com/jobs/run-a-job",
+            "docs"
+          ],
+          [
+            "View job results",
+            "https://docs.harborframework.com/results/view-job-results",
+            "docs"
+          ],
+          [
+            "Using Harbor to run agent evals at scale",
+            "https://www.youtube.com/watch?v=3Hggv3abkmI",
+            "video"
+          ]
+        ]
+      },
+      {
+        "t": "Anatomy of a Harbor task",
+        "h": 8,
+        "o": "You can build a task from scratch — instruction, task.toml, environment, solution, tests — run it locally, and verify the oracle passes while an empty agent fails.",
+        "l": [
+          [
+            "Task overview",
+            "https://docs.harborframework.com/tasks/overview",
+            "docs"
+          ],
+          [
+            "Create a task (tutorial)",
+            "https://docs.harborframework.com/tutorials/create-a-task",
+            "docs"
+          ],
+          [
+            "Task configuration",
+            "https://docs.harborframework.com/tasks/configuration",
+            "docs"
+          ],
+          [
+            "Task environment",
+            "https://docs.harborframework.com/tasks/environment",
+            "docs"
+          ],
+          [
+            "Task instruction",
+            "https://docs.harborframework.com/tasks/instruction",
+            "docs"
+          ]
+        ]
+      },
+      {
+        "t": "Verifiers, deep dive",
+        "h": 6,
+        "o": "You can emit reward.txt / reward.json, isolate the verifier in its own sandbox, and regrade existing trials while iterating on a grader.",
+        "l": [
+          [
+            "Verifier",
+            "https://docs.harborframework.com/tasks/verifier",
+            "docs"
+          ],
+          [
+            "Regrade",
+            "https://docs.harborframework.com/jobs/regrade",
+            "docs"
+          ],
+          [
+            "Task artifacts",
+            "https://docs.harborframework.com/tasks/artifacts",
+            "docs"
+          ]
+        ]
+      },
+      {
+        "t": "Datasets and registries",
+        "h": 6,
+        "o": "You can compose a dataset.toml, run datasets from the Hub, a git repo or a local directory, define aggregate metrics, and version the set.",
+        "l": [
+          [
+            "Datasets",
+            "https://docs.harborframework.com/datasets/datasets",
+            "docs"
+          ],
+          [
+            "Create a dataset",
+            "https://docs.harborframework.com/datasets/create-a-dataset",
+            "docs"
+          ],
+          [
+            "Git repo datasets",
+            "https://docs.harborframework.com/datasets/git-repos",
+            "docs"
+          ],
+          [
+            "Registries",
+            "https://docs.harborframework.com/datasets/registries",
+            "docs"
+          ],
+          [
+            "Metrics",
+            "https://docs.harborframework.com/datasets/metrics",
+            "docs"
+          ]
+        ]
+      },
+      {
+        "t": "Agents and trajectories",
+        "h": 6,
+        "o": "You can run one suite across many agents, write a custom agent against BaseAgent, and produce or parse ATIF trajectories for analysis.",
+        "l": [
+          [
+            "Pre-integrated agents",
+            "https://docs.harborframework.com/agents/pre-integrated-agents",
+            "docs"
+          ],
+          [
+            "Custom agents",
+            "https://docs.harborframework.com/agents/custom-agents",
+            "docs"
+          ],
+          [
+            "ATIF",
+            "https://docs.harborframework.com/agents/atif",
+            "docs"
+          ],
+          [
+            "Harbor x LangChain: unified eval stack",
+            "https://www.youtube.com/watch?v=Rh6KWngr8T4",
+            "video"
+          ]
+        ]
+      },
+      {
+        "t": "Sandboxes at scale",
+        "h": 6,
+        "o": "You can run 32+ trials in parallel on cloud sandboxes, pass secrets safely, blacklist network access per task, and add a custom runtime.",
+        "l": [
+          [
+            "Pre-integrated sandboxes",
+            "https://docs.harborframework.com/sandboxes/pre-integrated-sandboxes",
+            "docs"
+          ],
+          [
+            "Custom sandboxes",
+            "https://docs.harborframework.com/sandboxes/custom-sandboxes",
+            "docs"
+          ],
+          [
+            "Network policies",
+            "https://docs.harborframework.com/tasks/network-policies",
+            "docs"
+          ],
+          [
+            "Environment variables",
+            "https://docs.harborframework.com/jobs/environment-variables",
+            "docs"
+          ],
+          [
+            "Modal sandboxes",
+            "https://modal.com/docs/guide/sandbox",
+            "docs"
+          ],
+          [
+            "Daytona docs",
+            "https://daytona.io/docs",
+            "docs"
+          ]
+        ]
+      },
+      {
+        "t": "Jobs, errors and telemetry",
+        "h": 6,
+        "o": "You can configure and stream large jobs, classify failures into actionable buckets, collect artifacts, and wire OpenTelemetry into a run.",
+        "l": [
+          [
+            "Job configs",
+            "https://docs.harborframework.com/jobs/configs",
+            "docs"
+          ],
+          [
+            "Error classification",
+            "https://docs.harborframework.com/jobs/error-classification",
+            "docs"
+          ],
+          [
+            "Artifact collection",
+            "https://docs.harborframework.com/jobs/artifact-collection",
+            "docs"
+          ],
+          [
+            "Stream",
+            "https://docs.harborframework.com/jobs/stream",
+            "docs"
+          ],
+          [
+            "Instrument application traces with OpenTelemetry",
+            "https://opentelemetry.io/docs/languages/python/instrumentation/",
+            "docs"
+          ]
+        ]
+      },
+      {
+        "t": "Advanced task patterns",
+        "h": 12,
+        "o": "You can build multi-container, MCP-tool, skills, multi-step, simulated-user and computer-use tasks by adapting the cookbook recipes.",
+        "l": [
+          [
+            "Cookbook recipes",
+            "https://github.com/harbor-framework/harbor-cookbook/tree/main/harbor_cookbook/recipes",
+            "repo"
+          ],
+          [
+            "Multi-container task tutorial",
+            "https://docs.harborframework.com/tutorials/create-a-multi-container-task",
+            "docs"
+          ],
+          [
+            "Simulate a user",
+            "https://docs.harborframework.com/jobs/simulate-a-user",
+            "docs"
+          ],
+          [
+            "Multi-step tasks (announcement)",
+            "https://docs.harborframework.com/news/multi-step-tasks",
+            "docs"
+          ]
+        ]
+      },
+      {
+        "t": "Publish, leaderboard, share",
+        "h": 4,
+        "o": "You have a published dataset and a public leaderboard with rows linked to the exact trials behind them — auditable results, not screenshots.",
+        "l": [
+          [
+            "Publish a dataset",
+            "https://docs.harborframework.com/harbor-hub/publish",
+            "docs"
+          ],
+          [
+            "Leaderboards",
+            "https://docs.harborframework.com/harbor-hub/leaderboards",
+            "docs"
+          ],
+          [
+            "Harbor Hub",
+            "https://hub.harborframework.com/",
+            "tool"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "c": "S5",
+    "t": "RL environments & optimization",
+    "wk": "Weeks 10–16",
+    "bl": "Tasks become training data.",
+    "chs": [
+      {
+        "t": "RL foundations, minimal viable",
+        "h": 10,
+        "o": "You can read an environment spec — states, actions, rewards, episodes — and reason about why a reward function will or won't teach the right behavior.",
+        "l": [
+          [
+            "Spinning Up in Deep RL",
+            "https://spinningup.openai.com/en/latest/",
+            "course"
+          ],
+          [
+            "Gymnasium",
+            "https://gymnasium.farama.org/",
+            "docs"
+          ],
+          [
+            "Optional: classical Deep RL course (low maintenance)",
+            "https://huggingface.co/learn/deep-rl-course/unit0/introduction",
+            "course"
+          ]
+        ]
+      },
+      {
+        "t": "The post-training stack",
+        "h": 8,
+        "o": "You can explain SFT, DPO, PPO and GRPO, then run a small controlled training experiment with a baseline, held-out data, versioned settings and a written account of what changed. This is a specialist branch for post-training roles.",
+        "l": [
+          [
+            "The RLHF Book",
+            "https://rlhfbook.com/",
+            "course"
+          ],
+          [
+            "TRL",
+            "https://huggingface.co/docs/trl/index",
+            "docs"
+          ],
+          [
+            "verl",
+            "https://verl.readthedocs.io/en/latest/",
+            "docs"
+          ],
+          [
+            "PyTorch fundamentals and autograd",
+            "https://pytorch.org/tutorials/beginner/basics/intro.html",
+            "docs"
+          ]
+        ]
+      },
+      {
+        "t": "Tasks into RL environments",
+        "h": 10,
+        "o": "You can wrap a Harbor task as an environment with step() and grade(), shape multi-dimensional rewards, and run a small RL loop on it.",
+        "l": [
+          [
+            "Harbor RL (cookbook)",
+            "https://github.com/harbor-framework/harbor-cookbook/tree/main/harbor_cookbook/harbor_rl",
+            "repo"
+          ],
+          [
+            "Verifiers (Prime Intellect)",
+            "https://github.com/PrimeIntellect-ai/verifiers",
+            "repo"
+          ],
+          [
+            "Environments docs (Prime Intellect)",
+            "https://docs.primeintellect.ai/tutorials-environments/environments",
+            "docs"
+          ],
+          [
+            "Prime RL",
+            "https://docs.primeintellect.ai/prime-rl",
+            "docs"
+          ],
+          [
+            "Tinker",
+            "https://github.com/thinking-machines-lab/tinker",
+            "repo"
+          ]
+        ]
+      },
+      {
+        "t": "Harness and prompt optimization",
+        "h": 8,
+        "o": "You can optimize an agent harness with GEPA against your own eval suite, and attribute gains honestly between harness changes and model changes.",
+        "l": [
+          [
+            "GEPA",
+            "https://github.com/gepa-ai/gepa",
+            "repo"
+          ],
+          [
+            "GEPA + Harbor (cookbook)",
+            "https://github.com/harbor-framework/harbor-cookbook/tree/main/harbor_cookbook/gepa",
+            "repo"
+          ],
+          [
+            "MedAgentBench",
+            "https://github.com/stanfordmlgroup/MedAgentBench",
+            "repo"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "c": "S6",
+    "t": "The expert layer",
+    "wk": "Weeks 14–24",
+    "bl": "Adversarial evals, long-horizon, ops.",
+    "chs": [
+      {
+        "t": "Reward hacking and adversarial evals",
+        "h": 10,
+        "o": "You can design evals that resist optimization pressure, detect spec-gaming in traces, and document observed hacking as a first-class finding.",
+        "l": [
+          [
+            "Recent frontier models are reward hacking (METR)",
+            "https://metr.org/blog/2025-06-05-recent-reward-hacking/",
+            "blog"
+          ],
+          [
+            "TRACE",
+            "https://arxiv.org/abs/2601.20103",
+            "paper"
+          ],
+          [
+            "TRAIL",
+            "https://arxiv.org/abs/2505.08638",
+            "paper"
+          ],
+          [
+            "Monitoring reasoning models for misbehavior",
+            "https://arxiv.org/abs/2503.11926",
+            "paper"
+          ]
+        ]
+      },
+      {
+        "t": "Contamination and generalization",
+        "h": 6,
+        "o": "You can run leakage checks, build held-out and time-shifted splits, and state generalization limits instead of leaderboard deltas.",
+        "l": [
+          [
+            "Data contamination in modern benchmarks",
+            "https://arxiv.org/abs/2311.09783",
+            "paper"
+          ],
+          [
+            "Survey: data contamination",
+            "https://arxiv.org/abs/2404.00699",
+            "paper"
+          ],
+          [
+            "Epoch AI benchmarks",
+            "https://epoch.ai/benchmarks",
+            "tool"
+          ]
+        ]
+      },
+      {
+        "t": "Long-horizon and multi-step evals",
+        "h": 8,
+        "o": "You can design milestone tasks with partial credit and time budgets, and measure how capability decays as task length grows.",
+        "l": [
+          [
+            "Measuring AI ability to complete long tasks (METR)",
+            "https://metr.org/blog/2025-03-19-measuring-ai-ability-to-complete-long-tasks/",
+            "blog"
+          ],
+          [
+            "Multi-step tasks",
+            "https://docs.harborframework.com/news/multi-step-tasks",
+            "docs"
+          ],
+          [
+            "Terminal-Bench paper",
+            "https://arxiv.org/abs/2601.11868",
+            "paper"
+          ]
+        ]
+      },
+      {
+        "t": "Eval ops: cost, caching, CI",
+        "h": 8,
+        "o": "You can run a versioned evaluation pipeline with retries, idempotency, timeouts, caching and budget controls, and gate a change in CI using held-out results, uncertainty, cost and latency. Hosted execution alone is not production operations.",
+        "l": [
+          [
+            "Hosted Harbor",
+            "https://docs.harborframework.com/hosted-harbor/index",
+            "docs"
+          ],
+          [
+            "Streaming jobs",
+            "https://docs.harborframework.com/jobs/stream",
+            "docs"
+          ],
+          [
+            "Custom plugins",
+            "https://docs.harborframework.com/plugins/custom-plugins",
+            "docs"
+          ],
+          [
+            "Evaluation gates in CI/CD",
+            "https://docs.langchain.com/langsmith/cicd-pipeline-example",
+            "docs"
+          ],
+          [
+            "Durable workflows with Temporal (Python)",
+            "https://docs.temporal.io/develop/python",
+            "docs"
+          ],
+          [
+            "Instrument application traces with OpenTelemetry",
+            "https://opentelemetry.io/docs/languages/python/instrumentation/",
+            "docs"
+          ]
+        ]
+      },
+      {
+        "t": "Contributing and public proof",
+        "h": 8,
+        "o": "You have an original task-and-verifier pack and a deployed evaluation service, with reproducible results, grader exploit tests, a calibrated judge and a technical decision memo. A useful reviewed OSS contribution backs up your engineering and collaboration claims.",
+        "l": [
+          [
+            "Contributing to Harbor",
+            "https://github.com/harbor-framework/harbor/blob/main/CONTRIBUTING.md",
+            "repo"
+          ],
+          [
+            "Adapter contributing guide",
+            "https://github.com/harbor-framework/harbor/blob/main/adapters/ADAPTER_CONTRIBUTING.md",
+            "repo"
+          ],
+          [
+            "Adapters directory",
+            "https://github.com/harbor-framework/harbor/tree/main/adapters",
+            "repo"
+          ],
+          [
+            "Harbor cookbook",
+            "https://github.com/harbor-framework/harbor-cookbook",
+            "repo"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "c": "S7",
+    "t": "Positioning & targets",
+    "wk": "Week 8+",
+    "bl": "Point skills at market.",
+    "chs": [
+      {
+        "t": "Targets and applications",
+        "h": 4,
+        "o": "You have a ranked target list of evals-forward startups, the exact role titles to search, and three public artifacts backing every claim on your resume.",
+        "l": [
+          [
+            "Frontier List",
+            "https://frontierlist.com/",
+            "tool"
+          ],
+          [
+            "Pavlov's List",
+            "https://pavlovslist.com/",
+            "tool"
+          ],
+          [
+            "Breakout List",
+            "https://breakoutlist.com/",
+            "tool"
+          ],
+          [
+            "Terminal-Bench leaderboard",
+            "https://www.tbench.ai/leaderboard",
+            "tool"
+          ],
+          [
+            "Surge careers",
+            "https://surgehq.ai/careers",
+            "tool"
+          ],
+          [
+            "Scale careers",
+            "https://scale.com/careers",
+            "tool"
+          ],
+          [
+            "Snorkel careers",
+            "https://snorkel.ai/careers/",
+            "tool"
+          ],
+          [
+            "Mercor: Agent Eval Systems",
+            "https://www.mercor.com/blog/agent-eval-systems/",
+            "blog"
+          ],
+          [
+            "Current job requirements and resource audit",
+            "audit.html",
+            "tool"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "c": "S8",
+    "t": "Production applied AI",
+    "wk": "Weeks 8–16",
+    "bl": "Turn the eval loop into a system people can use.",
+    "chs": [
+      {
+        "t": "Typed APIs and a database-backed review tool",
+        "h": 12,
+        "o": "You can build a typed API and PostgreSQL schema for datasets, task versions, trials and labels. A small review interface preserves context and makes human judgments easy to record.",
+        "l": [
+          [
+            "FastAPI tutorial",
+            "https://fastapi.tiangolo.com/tutorial/",
+            "docs"
+          ],
+          [
+            "PostgreSQL tutorial",
+            "https://www.postgresql.org/docs/current/tutorial.html",
+            "docs"
+          ],
+          [
+            "Design an error-analysis viewer",
+            "https://hamel.dev/blog/posts/field-guide/",
+            "blog"
+          ]
+        ]
+      },
+      {
+        "t": "Durable evaluation pipelines and release gates",
+        "h": 12,
+        "o": "You can build durable jobs with retries, timeouts, idempotency and cleanup; attach traces, account for spend, and block a release on a justified regression threshold.",
+        "l": [
+          [
+            "Durable workflows with Temporal (Python)",
+            "https://docs.temporal.io/develop/python",
+            "docs"
+          ],
+          [
+            "Evaluation gates in CI/CD",
+            "https://docs.langchain.com/langsmith/cicd-pipeline-example",
+            "docs"
+          ],
+          [
+            "Instrument application traces with OpenTelemetry",
+            "https://opentelemetry.io/docs/languages/python/instrumentation/",
+            "docs"
+          ],
+          [
+            "Modal sandbox lifecycle",
+            "https://modal.com/docs/guide/sandbox",
+            "docs"
+          ]
+        ]
+      },
+      {
+        "t": "Retrieval and RAG evaluation in a real product",
+        "h": 10,
+        "o": "You can create a held-out retrieval dataset, measure retrieval separately from answer quality, calibrate a groundedness judge against human labels, and show a measured improvement with cost and latency tradeoffs.",
+        "l": [
+          [
+            "Evaluate a RAG application",
+            "https://docs.langchain.com/langsmith/evaluate-rag-tutorial",
+            "docs"
+          ],
+          [
+            "Product evals in three steps",
+            "https://eugeneyan.com/writing/product-evals/",
+            "blog"
+          ],
+          [
+            "Evaluate your LLM judge",
+            "https://eugeneyan.com/writing/llm-evaluators/",
+            "blog"
+          ]
+        ]
+      },
+      {
+        "t": "Browser tasks, human review and portfolio proof",
+        "h": 10,
+        "o": "You can implement a resettable browser or computer-use workflow, verify final application state, collect failure traces and expert feedback, and publish a concise report with baselines, repeated trials and known limitations. Target job level and experience separately from course completion.",
+        "l": [
+          [
+            "WebArena",
+            "https://webarena.dev/",
+            "tool"
+          ],
+          [
+            "OSWorld",
+            "https://os-world.github.io/",
+            "tool"
+          ],
+          [
+            "Demystifying evals for AI agents",
+            "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+            "blog"
+          ],
+          [
+            "Hiring alignment and portfolio requirements",
+            "audit.html",
+            "tool"
+          ]
+        ]
+      }
+    ]
+  }
+];
+const KEY = "evals-path-tracker-v1";
+const THEME_KEY = "evals-path-theme";
+let done = {};
+try { done = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { done = {}; }
+const TODAY_ISO = new Date().toISOString().slice(0, 10);
+for (const k in done) if (done[k] === true) done[k] = TODAY_ISO;
+
+const mq = window.matchMedia("(prefers-color-scheme: dark)");
+function themePref(){ try { return localStorage.getItem(THEME_KEY) || "auto"; } catch (e) { return "auto"; } }
+function effectiveTheme(){ const p = themePref(); return p !== "auto" ? p : (mq.matches ? "dark" : "light"); }
+function renderThemeBtn(){
+  const p = themePref(), eff = effectiveTheme();
+  const b = document.getElementById("theme");
+  b.innerHTML = ic(p === "auto" ? "monitor" : p === "light" ? "sun" : "moon");
+  b.title = "theme: " + p + " (showing " + eff + ") — click to cycle auto → light → dark";
+  b.setAttribute("aria-label", "Theme " + p + ", showing " + eff + ". Click to change.");
+}
+document.getElementById("theme").addEventListener("click", () => {
+  const next = { auto: "light", light: "dark", dark: "auto" }[themePref()];
+  try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
+  if (next === "auto") document.documentElement.removeAttribute("data-theme");
+  else document.documentElement.setAttribute("data-theme", next);
+  renderThemeBtn();
+});
+if (mq.addEventListener) mq.addEventListener("change", () => { if (themePref() === "auto") renderThemeBtn(); });
+renderThemeBtn();
+
+const bento = document.getElementById("bento"); const els = []; let idx = 0;
+DATA.forEach((s, si) => {
+  const sec = document.createElement("article");
+  sec.className = "tile sec s" + si; sec.dataset.sec = s.c;
+  const head = document.createElement("div"); head.className = "sec-h";
+  head.innerHTML = '<span class="code">[' + s.c + ']</span>' + (s.c === "S4" ? '<span class="core">[core]</span>' : "") +
+    '<h2 title="' + s.t + '">' + s.t + '</h2><span class="wk">' + s.wk + '</span>' +
+    '<span class="right"><span class="mini"><i></i></span><span class="cnt"></span></span>';
+  sec.appendChild(head);
+  const blurb = document.createElement("div"); blurb.className = "blurb"; blurb.textContent = s.bl; sec.appendChild(blurb);
+  const rows = document.createElement("div"); rows.className = "rows";
+  if (si === 1 || si === 3 || si === 4 || si === 5) rows.classList.add("two");
+  s.chs.forEach(ch => {
+    idx++; const id = "c" + idx;
+    const row = document.createElement("div"); row.className = "ch-row"; row.tabIndex = 0; row.setAttribute("role", "button");
+    row.dataset.cid = id;
+    row.innerHTML = '<span class="tick" role="checkbox" tabindex="0" aria-label="mark done">' + ic("check") + '</span>' +
+      '<span class="num">' + String(idx).padStart(2, "0") + '</span>' +
+      '<span class="ttl" title="' + ch.t + '">' + ch.t + '</span>' +
+      '<span class="hrs">' + ch.h + 'h</span>' +
+      '<span class="chev">' + ic("chev") + '</span>';
+    rows.appendChild(row);
+    els.push({ el: row, id, num: idx, h: ch.h, t: ch.t, sec: s.c, secTitle: s.t, o: ch.o, l: ch.l });
+  });
+  sec.appendChild(rows);
+  bento.appendChild(sec);
+});
+const sectionBoard = document.createElement('div');
+sectionBoard.className = 'section-board';
+bento.querySelectorAll('.sec').forEach(sec => sectionBoard.appendChild(sec));
+bento.appendChild(sectionBoard);
+const byId = id => els.find(e => e.id === id);
+const TOTAL_H = els.reduce((a, e) => a + e.h, 0);
+const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function localISO(d){ return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+function addDays(d, n){ const x = new Date(d); x.setDate(x.getDate() + n); return x; }
+function fmtShort(iso){ const p = iso.split("-"); return MON[+p[1] - 1] + " " + (+p[2]); }
+function prettyDay(iso){ return new Date(iso + "T12:00:00").toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" }); }
+const TODAY = localISO(new Date());
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(done)); } catch(e){} }
+
+function streaks(){
+  const ds = [...new Set(Object.values(done))].sort();
+  const set = new Set(ds);
+  let cur = 0, d = new Date();
+  if (!set.has(localISO(d))) d = addDays(d, -1);
+  while (set.has(localISO(d))) { cur++; d = addDays(d, -1); }
+  let best = 0, run = 0, prev = null;
+  ds.forEach(day => { run = (prev && (new Date(day) - new Date(prev)) === 86400000) ? run + 1 : 1; if (run > best) best = run; prev = day; });
+  const mine = els.filter(e => done[e.id]);
+  return { cur, best, days: ds.length, n: mine.length, h: mine.reduce((a, e) => a + e.h, 0), last: ds.length ? ds[ds.length - 1] : null };
+}
+
+function syncRowStates(){
+ els.forEach(e=>{const d=!!done[e.id];document.querySelectorAll('[data-cid="'+e.id+'"]').forEach(r=>{r.classList.toggle('done',d);r.querySelector('.tick').setAttribute('aria-checked',d)});e.el.classList.toggle('hide',d)});
+}
+
+/* ---------- activity graph ---------- */
+const GWEEKS = 26;
+function buildGraph(){
+  const today = new Date(), dow = (today.getDay() + 6) % 7;
+  const start = addDays(today, -dow - (GWEEKS - 1) * 7);
+  let cells = "", months = "", lastM = -1;
+  for (let w = 0; w < GWEEKS; w++){
+    const wkMon = addDays(start, w * 7);
+    if (wkMon.getMonth() !== lastM){ months += '<span style="left:' + (w * 16) + 'px">' + MON[wkMon.getMonth()] + '</span>'; lastM = wkMon.getMonth(); }
+    for (let r = 0; r < 7; r++){
+      const dt = addDays(start, w * 7 + r), iso = localISO(dt);
+      cells += '<i class="l0' + (dt > today ? " fut" : "") + '" data-iso="' + iso + '"></i>';
+    }
+  }
+  document.getElementById("graph").innerHTML =
+    '<div class="g-days"><span>Mon</span><span></span><span>Wed</span><span></span><span>Fri</span><span></span><span></span></div>' +
+    '<div class="g-main"><div class="g-months">' + months + '</div>' +
+    '<div class="g-grid">' + cells + '</div></div>';
+  document.getElementById("g-range").textContent = "since " + fmtShort(localISO(start));
+}
+function paintGraph(){
+  const cnt = {};
+  for (const id in done){ const dt = done[id]; if (dt) cnt[dt] = (cnt[dt] || 0) + 1; }
+  document.querySelectorAll("#graph .g-grid i").forEach(c => {
+    const n = cnt[c.dataset.iso] || 0;
+    const lv = n === 0 ? 0 : n === 1 ? 1 : n === 2 ? 2 : n === 3 ? 3 : 4;
+    const fut = c.classList.contains("fut");
+    c.className = "l" + lv + (fut ? " fut" : "");
+    c.title = (n ? n + (n === 1 ? " chapter" : " chapters") + " done · " : "") + prettyDay(c.dataset.iso);
+  });
+}
+
+/* ---------- syllabus overview ---------- */
+function buildOverview(){
+  const ov = document.getElementById("overview");
+  let n = 0;
+  let html = '<div class="overview-toolbar"><div><div class="sec-h"><span class="code">[syllabus]</span><h2>The full path</h2></div><p class="overview-caption">' + DATA.length + ' sections · ' + els.length + ' chapters · ~' + TOTAL_H + ' h · expand to review</p></div><div class="filters" aria-label="Chapter filter"><button class="on" data-filter="all" aria-pressed="true">all chapters</button><button data-filter="done" aria-pressed="false">completed <span id="filter-count">0</span></button></div></div><div class="ov-empty" hidden>No completed chapters yet. Your finished work will appear here.</div>';
+  DATA.forEach((s, si) => {
+    const tot = s.chs.length, hrs = s.chs.reduce((a, c) => a + c.h, 0);
+    let chs = "";
+    s.chs.forEach(ch => { n++;
+      chs += '<div class="ch-row" data-cid="c' + n + '" tabindex="0" role="button">' +
+        '<span class="tick" role="checkbox" tabindex="0" aria-label="mark done">' + ic("check") + '</span><span class="num">' + String(n).padStart(2, "0") + '</span>' +
+        '<span class="ttl">' + ch.t + '</span><span class="hrs">' + ch.h + 'h</span><span class="chev">' + ic("chev") + '</span></div>';
+    });
+    html += '<div class="ov-row" data-ovrow="' + si + '"><div class="ov-head" role="button" tabindex="0" aria-expanded="false" aria-controls="ov-chs-' + si + '">' +
+      '<span class="code">[' + s.c + ']</span><span class="ov-identity"><span class="ov-title"><span class="ov-t">' + s.t + '</span>' + (s.c === "S4" ? '<span class="core">[core]</span>' : '') + '</span><span class="ov-meta">' + s.wk + ' · ' + tot + ' chapters · ' + hrs + ' h</span></span>' +
+      '<span class="right"><span class="mini"><i></i></span><span class="cnt"></span><span class="chev2">' + ic("chev") + '</span></span></div>' +
+      '<div class="ov-chs" id="ov-chs-' + si + '"><div class="rows">' + chs + '</div></div></div>';
+
+  });
+  ov.innerHTML = html;
+}
+let overviewFilter = "all";
+function applyOverviewFilter(){
+  document.querySelectorAll('#overview .ov-row').forEach(row => {
+    const chapters = [...row.querySelectorAll('.ch-row')];
+    row.hidden = overviewFilter === 'done' && !chapters.some(r => done[r.dataset.cid]);
+    chapters.forEach(r => r.hidden = overviewFilter === 'done' && !done[r.dataset.cid]);
+    if (overviewFilter === 'done' && !row.hidden) row.classList.add('open');
+    row.querySelector('.ov-head').setAttribute('aria-expanded', row.classList.contains('open'));
+  });
+  document.querySelector('.ov-empty').hidden = overviewFilter !== 'done' || els.some(e => done[e.id]);
+  document.getElementById('filter-count').textContent = els.filter(e => done[e.id]).length;
+}
+function updateOverview(){
+  document.querySelectorAll("#overview .ov-row").forEach(row => {
+    const mine = els.filter(e => e.sec === DATA[+row.dataset.ovrow].c);
+    const dn = mine.filter(e => done[e.id]).length;
+    row.querySelector(".mini i").style.width = (100 * dn / mine.length) + "%";
+    row.querySelector(".cnt").textContent = dn + "/" + mine.length;
+    row.querySelector(".code").classList.toggle("full", dn === mine.length);
+  });
+  document.querySelectorAll("#overview .ch-row").forEach(r => {
+    const e = byId(r.dataset.cid); if (!e) return;
+    const hEl = r.querySelector(".hrs"); if (!hEl) return;
+    hEl.textContent = done[e.id] ? e.h + "h · " + fmtShort(done[e.id]) : e.h + "h";
+  });
+  applyOverviewFilter();
+}
+function toggleOv(row){
+  const open = row.classList.toggle("open");
+  row.querySelector(".ov-head").setAttribute("aria-expanded", open);
+  if (open && M){ const chs = row.querySelector(".ov-chs"); am(chs, { height: [0, chs.scrollHeight] }, { duration: .28, easing: "easeOut" }); }
+}
+
+/* ---------- streak ---------- */
+function paintStreak(){
+  const s = streaks();
+  document.getElementById("st-cur").textContent = String(s.cur);
+  document.getElementById("st-best").textContent = String(s.best);
+  document.getElementById("st-days").textContent = String(s.days);
+  document.getElementById("st-done").textContent = String(s.n);
+  document.getElementById("st-h").textContent = s.h + " h";
+  document.getElementById("st-mini").textContent = s.n + " done · " + s.h + " h";
+  document.getElementById("st-next").textContent = !s.n ? "tick chapters in the active tab to build your streak"
+    : s.cur > 0 ? "streak alive — " + s.cur + (s.cur === 1 ? " day" : " days") + " and counting"
+    : "no activity today — tick one chapter to keep the habit";
+}
+
+function paint(anim){
+  let n = 0, hours = 0;
+  els.forEach(e => { if (done[e.id]){ n++; hours += e.h; } });
+  const pct = Math.round(100 * n / els.length);
+  document.getElementById("bar").style.width = (100 * n / els.length) + "%";
+  document.getElementById("barlab").textContent = n + " / " + els.length + " · " + pct + "%";
+  document.getElementById("pct").textContent = pct + "%";
+  document.getElementById("s-done").textContent = String(n);
+  document.getElementById("s-left").textContent = String(els.length - n);
+  document.getElementById("s-h").textContent = hours + " h";
+  let secsDone = 0;
+  document.querySelectorAll(".sec").forEach(sec => {
+    const mine = els.filter(e => e.sec === sec.dataset.sec);
+    const dn = mine.filter(e => done[e.id]).length;
+    if (dn === mine.length) secsDone++;
+    sec.querySelector(".mini i").style.width = (100 * dn / mine.length) + "%";
+    sec.querySelector(".cnt").textContent = dn + "/" + mine.length;
+    sec.querySelector(".code").classList.toggle("full", dn === mine.length);
+    sec.classList.toggle("done", dn === mine.length);
+    sec.classList.toggle("alldone", dn === mine.length);
+  });
+  document.getElementById("s-secs").textContent = secsDone + "/" + DATA.length;
+  const firstTodo = els.find(e => !done[e.id]);
+  document.getElementById("s-next-t").textContent = n === els.length ? "path complete — publish it"
+    : "next: " + firstTodo.sec + " · " + firstTodo.secTitle;
+  paintGraph(); updateOverview(); paintStreak();
+  syncRowStates(anim === true);
+}
+const mback = document.getElementById("mback");
+let mid = null;
+function ytId(url){ const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{6,})/); return m ? m[1] : null; }
+function openModal(e){
+  mid = e.id;
+  document.getElementById("m-code").textContent = "[" + e.sec + " · " + String(e.num).padStart(2, "0") + "/" + els.length + "]";
+  document.getElementById("m-h").textContent = e.h + " h";
+  document.getElementById("m-title").textContent = e.t;
+  document.getElementById("m-out").textContent = e.o;
+  const links = e.l.slice().sort((a, b) => (a[2] === "video" ? 0 : 1) - (b[2] === "video" ? 0 : 1));
+  document.getElementById("m-links").innerHTML = links.map(x => {
+    const rating = RESOURCE_AUDIT[x[1]];
+    const vw = '<span class="vw">' + (rating ? rating.score.toFixed(1) + '/10 · ' + rating.action : 'added after audit · unrated') + '</span>';
+    const vid = x[2] === "video" ? ytId(x[1]) : null;
+    if (vid) return '<a class="lnk vlnk" href="' + x[1] + '" data-vid="' + vid + '" title="play inline">' +
+      ic("video") + '<span>' + x[0] + '</span>' + vw + '</a>';
+    return '<a class="lnk" href="' + x[1] + '" target="_blank" rel="noopener" title="' + x[2] + '">' +
+      ic(IC[x[2]] ? x[2] : "docs") + '<span>' + x[0] + '</span>' + vw + '</a>';
+  }).join("");
+  const emb = document.getElementById("m-embed");
+  emb.classList.remove("open"); emb.innerHTML = "";
+  syncToggle();
+  mback.classList.add("open");
+}
+function syncToggle(){
+  const b = document.getElementById("m-toggle"); const d = !!done[mid];
+  b.innerHTML = ic(d ? "check" : "box") + (d ? "done — undo" : "mark done");
+  b.classList.toggle("on", d);
+}
+function closeModal(){ mback.classList.remove("open"); mid = null; }
+document.getElementById("m-x").addEventListener("click", closeModal);
+mback.addEventListener("click", ev => { if (ev.target === mback) closeModal(); });
+document.addEventListener("keydown", ev => { if (ev.key === "Escape") closeModal(); });
+document.getElementById("m-toggle").addEventListener("click", () => { if (mid) setDone(mid, !done[mid], true); });
+document.getElementById("m-links").addEventListener("click", ev => {
+  const a = ev.target.closest(".vlnk"); if (!a) return;
+  ev.preventDefault();
+  const emb = document.getElementById("m-embed");
+  emb.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + a.dataset.vid +
+    '?autoplay=1&rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen title="video player"></iframe>';
+  emb.classList.add("open");
+  document.querySelectorAll("#m-links .vlnk").forEach(x => x.classList.toggle("von", x === a));
+  am(emb, { y: [6, 0] }, { duration: .25 });
+});
+
+function parseProgress(payload){
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) throw new Error('Choose a progress JSON file.');
+  const source = Array.isArray(payload.done) ? Object.fromEntries(payload.done.map(x => [x.id, x.completed])) : payload;
+  const result = {};
+  for (const [id, value] of Object.entries(source)) {
+    if (!byId(id)) continue;
+    const date = value === true ? TODAY : value;
+    if (typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date) || new Date(date+'T12:00:00Z').toISOString().slice(0,10) !== date) throw new Error('Invalid completion date for '+id);
+    result[id] = date;
+  }
+  if (!Object.keys(result).length) throw new Error('No completed chapters found in this file.');
+  return result;
+}
+document.getElementById('export-progress').addEventListener('click', () => {
+  const payload = {track:'evals-engineer', updated:new Date().toISOString(), done:els.filter(e=>done[e.id]).map(e=>({id:e.id,chapter:e.t,completed:done[e.id]}))};
+  const url=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}));
+  const a=document.createElement('a');a.href=url;a.download='evals-path-progress.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+});
+document.getElementById('import-progress').addEventListener('click',()=>document.getElementById('progress-file').click());
+document.getElementById('progress-file').addEventListener('change',async ev=>{
+  const file=ev.target.files[0];if(!file)return;
+  try{if(file.size>1024*1024)throw new Error('Progress files must be under 1 MB.');const imported=parseProgress(JSON.parse(await file.text()));Object.assign(done,imported);save();paint(false);document.getElementById('progress-message').textContent='Imported '+Object.keys(imported).length+' completed chapters.';}
+  catch(e){document.getElementById('progress-message').textContent=e.message;}finally{ev.target.value='';}
+});
+function setDone(id, val, anim){
+  if (val) done[id] = TODAY; else delete done[id];
+  save(); paint(anim === true); if (mid === id) syncToggle();
+}
+els.forEach(e => {
+  const tick = e.el.querySelector(".tick");
+  const toggle = ev => { ev.stopPropagation(); setDone(e.id, !done[e.id], true); };
+  tick.addEventListener("click", toggle);
+  tick.addEventListener("keydown", ev => { if (ev.key === "Enter" || ev.key === " "){ ev.preventDefault(); toggle(ev); } });
+  e.el.addEventListener("click", () => openModal(e));
+  e.el.addEventListener("keydown", ev => { if (ev.key === "Enter"){ ev.preventDefault(); openModal(e); } });
+});
+function wireList(el){
+  el.addEventListener("click", ev => {
+    const head = ev.target.closest(".ov-head");
+    if (head){ toggleOv(head.parentElement); return; }
+    const row = ev.target.closest(".ch-row"); if (!row) return;
+    const e = byId(row.dataset.cid); if (!e) return;
+    if (ev.target.closest(".tick")) setDone(e.id, !done[e.id], true); else openModal(e);
+  });
+  el.addEventListener("keydown", ev => {
+    if (ev.key !== "Enter" && ev.key !== " ") return;
+    const head = ev.target.closest(".ov-head");
+    if (head){ ev.preventDefault(); toggleOv(head.parentElement); return; }
+    const row = ev.target.closest(".ch-row"); if (!row) return;
+    ev.preventDefault();
+    const e = byId(row.dataset.cid); if (!e) return;
+    if (ev.target.closest(".tick")) setDone(e.id, !done[e.id], true); else openModal(e);
+  });
+}
+wireList(document.getElementById("overview"));
+document.getElementById("reset").addEventListener("click", () => {
+  if (Object.keys(done).length && !confirm("reset all progress? this clears every tick and streak.")) return;
+  done = {}; save(); paint(false); if (mid) syncToggle();
+});
+document.getElementById("copy").addEventListener("click", async ev => {
+  const s = streaks();
+  const payload = { track: "evals-engineer", updated: new Date().toISOString(), streak: s.cur, bestStreak: s.best, hours: s.h,
+    done: els.filter(e => done[e.id]).map(e => ({ id: e.id, section: e.sec, chapter: e.t, completed: done[e.id] })) };
+  const b = ev.currentTarget;
+  try { await navigator.clipboard.writeText(JSON.stringify(payload, null, 2)); b.innerHTML = ic("check") + "copied"; }
+  catch (err) { b.innerHTML = ic("copy") + "failed"; }
+  setTimeout(() => { b.innerHTML = ic("copy") + "copy"; }, 1400);
+});
+
+/* ---------- tabs ---------- */
+const panels = {};
+document.querySelectorAll("[data-panel]").forEach(p => panels[p.dataset.panel] = p);
+const TABS = ["active", "syllabus"];
+let tab = "active";
+try { const t0 = localStorage.getItem("evals-path-tab"); if (TABS.includes(t0)) tab = t0; } catch (e) {}
+const tabBtns = [...document.querySelectorAll("#tabs button")];
+let graphPlayed = false;
+function showTab(t, animate){
+  tab = t;
+  try { localStorage.setItem("evals-path-tab", t); } catch (e) {}
+  tabBtns.forEach(b => { const selected = b.dataset.t === t; b.classList.toggle("on", selected); b.setAttribute('aria-selected', selected); b.tabIndex = selected ? 0 : -1; });
+  TABS.forEach(x => { if (x === t) panels[x].hidden = false; });
+  const cur = panels[t];
+  if (animate && M){
+    am(cur, { y: [10, 0] }, { duration: .3, easing: "easeOut" });
+    const tiles = [...cur.querySelectorAll(".tile")];
+    if (tiles.length) am(tiles, { y: [8, 0] }, { delay: M.stagger(0.02), duration: .3, easing: "easeOut" });
+    if (t === "syllabus" && !graphPlayed){
+      graphPlayed = true;
+      am([...cur.querySelectorAll(".g-grid i, .ov-head")], { y: [5, 0] }, { delay: M.stagger(0.004), duration: .32, easing: "easeOut" });
+    }
+  }
+  TABS.forEach(x => { if (x !== t) panels[x].hidden = true; });
+}
+tabBtns.forEach(b => b.addEventListener("click", () => { if (b.dataset.t !== tab) showTab(b.dataset.t, true); }));
+
+document.getElementById('tabs').addEventListener('keydown', ev => {
+  if (!['ArrowLeft','ArrowRight','Home','End'].includes(ev.key)) return;
+  ev.preventDefault();
+  const next = ev.key === 'Home' ? 0 : ev.key === 'End' ? 1 : 1 - TABS.indexOf(tab);
+  showTab(TABS[next], false); tabBtns[next].focus();
+});
+document.getElementById('overview').addEventListener('click', ev => {
+  const b = ev.target.closest('[data-filter]'); if (!b) return;
+  overviewFilter = b.dataset.filter;
+  document.querySelectorAll('[data-filter]').forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', x === b); });
+  if (overviewFilter === 'all') document.querySelectorAll('.ov-row').forEach(r => r.classList.remove('open'));
+  applyOverviewFilter();
+});
+buildGraph(); buildOverview(); paint(false);
+showTab(tab, false);
+function runIntro(){
+  if (!M) return;
+  am([...panels.active.querySelectorAll(".tile")], { y: [10, 0] }, { delay: M.stagger(0.035), duration: .35, easing: "easeOut" });
+}
+console.log("bento chapters:", els.length, "hours:", TOTAL_H, "theme:", effectiveTheme(), "motion:", !!M ? "on" : "pending", "tab:", tab);
+</script></body></html>

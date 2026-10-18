@@ -1,0 +1,104 @@
+# Evals path resource and hiring audit
+Checked 17 October 2026. All locations, including relocation.
+
+**Verdict: 8/10 as a source library; 6/10 as a complete applied-AI hiring curriculum.** These are editorial assessments, not hiring probabilities. Many individual sources are excellent. The sequencing, missing engineering practice, and differentiation between engineering and research roles need work. No worldwide “best resource” claim is justified by popularity, views, or author reputation alone.
+
+The path contains 39 chapters, 151 unique URLs and 15 video/playlist links. Fifty-five URLs are Harbor-related (36% of the library); this is a count of links, not a measure of study time. This is useful specialization for environment/eval engineering, but narrower than applied-AI hiring as a whole.
+
+## Scope and evidence
+- Scraped Chris Barber’s entry page, Frontier List, Pavlov’s List and Breakout List, plus relevant linked data/post-training subpages. Crawled all 69 company entries identified on the current Pavlov RL-environments page; Sepal is marked acquired and its linked site returned 404.
+- Captured employer ATS feeds and current linked career pages. The saved engineering inventory contains 397 postings across 26 employers; 176 are classified as closer to applied AI, agent, evaluation or post-training work, across 25 employers. Multiple locations and levels can be separate postings. These are not 176 distinct job types.
+- The company manifest states which firms have verified JDs, blocked pages, or no relevant JD verified. An empty result is not evidence that an employer is not hiring. This is not an exhaustive crawl of every employer and every job reachable through Chris Barber’s entire ecosystem.
+- Full JD text is saved for each captured role. Skills in the large matrix are automated mentions from that text, not a claim that every mention is mandatory. The 15 priority role summaries below were individually reviewed for level, requirements and portfolio implications.
+- All 136 non-video URLs were fetched; page/README/syllabus or paper abstract inspection does not mean every linked book, repository file, exercise or paper experiment was completed. Twelve video/playlist entries have subtitle evidence; the playlist overlaps its separately linked first lecture. Three individual videos have metadata-only, provisional assessments after subtitle retrieval failed. Paid-course delivery was not audited.
+- Search results were used for discovery. Open status uses current employer feeds or an explicit link from a current employer careers page. Stale results and retrievable-but-unlisted postings are kept separately in job-status-exceptions.json. Availability can change after this snapshot.
+
+## Scoring method
+Each resource has five editorial scores from 1 to 5: relevance to these JDs (30%), practical artifact potential (25%), technical depth (20%), currency or durability (15%), and study efficiency (10%). The priority score out of 10 is twice their weighted mean. A 10 means highest study priority under this rubric, not a flawless resource. Confidence and review depth are separate columns. A useful reference can score well without being mandatory sequential reading.
+
+Core = use deeply or during an appropriate project; Reference = consult as needed; Specialist = use for a specific role family; Optional = choose if it fills your background gap; Replace = wrong/default-outdated placement; Skip = little return for this goal. The 69 Core entries include many short implementation reference pages, not 69 mandatory courses.
+
+## Highest-value material already in your path
+| Resource | Priority /10 | How to use it |
+|---|---:|---|
+| [A Field Guide to Rapidly Improving AI Products](https://hamel.dev/blog/posts/field-guide/) | 9.5 | Excellent bottom-up error analysis and data-inspection practice; reproduce it on real traces. |
+| [Your AI product needs evals](https://hamel.dev/blog/posts/evals/) | 9.7 | Strong layered testing, human review and model-evaluation workflow. |
+| [Product evals in three simple steps](https://eugeneyan.com/writing/product-evals/) | 10.0 | Compact label-calibrate-regress loop translates directly into portfolio evidence. |
+| [Evaluating LLM-evaluators](https://eugeneyan.com/writing/llm-evaluators/) | 9.2 | Strong judge validation, metrics and calibration discussion; reproduce on held-out human labels. |
+| [Adding error bars to evals](https://arxiv.org/abs/2411.00640) | 9.0 | Good statistical grounding; implement paired comparisons and uncertainty reporting. |
+| [A statistical approach to model evals (Anthropic)](https://www.anthropic.com/research/statistical-approach-to-model-evals) | 9.2 | Efficient practical guidance on paired differences, clustering and power. |
+| [Create a task (tutorial)](https://docs.harborframework.com/tutorials/create-a-task) | 10.0 | Best practical path to a task with an oracle solution and verifier. |
+| [Verifier (Harbor)](https://docs.harborframework.com/tasks/verifier) | 10.0 | Central verifier contract and reward-file behavior for an executable benchmark artifact. |
+| [Separate verifier sandbox](https://docs.harborframework.com/tasks/separate-verifier) | 9.8 | Verifier isolation is an important control against agent tampering; test the boundary explicitly. |
+| [AI Evaluations Clearly Explained (Hamel)](https://www.youtube.com/watch?v=uiza7wp1KrE) | 9.1 | Best focused eval video in this path for applied work; concrete example and inspection-first workflow. |
+| [Using Harbor to run agent evals at scale](https://www.youtube.com/watch?v=3Hggv3abkmI) | 9.1 | Creator-led 17.6-minute implementation-oriented Harbor introduction with a concrete task demo. |
+| [Harbor x LangChain: unified eval stack](https://www.youtube.com/watch?v=Rh6KWngr8T4) | 9.1 | Concise sandbox-and-verifier walkthrough; good bridge to LangChain agent workflows. |
+| [Deep Dive into LLMs (Karpathy)](https://www.youtube.com/watch?v=7xTGNNLPyMI) | 7.9 | Strong conceptual LLM foundation; sampled transcript covers tokenization and post-training. |
+| [Verifiers (Prime Intellect)](https://github.com/PrimeIntellect-ai/verifiers) | 9.8 | Strong environment-and-evaluation implementation resource, especially for Prime Intellect targets. |
+
+The strongest eval-specific video trio in the existing set is Hamel’s concrete walkthrough, Alex Shaw’s Harbor talk, and the Harbor × LangChain demo. Karpathy’s deep dive is a conceptual prerequisite when needed. Views were not used in scoring. The 2018 beginner Python course and the 2019 Docker course can help a beginner, but are inefficient defaults for an engineer; current Python/asyncio, Docker and pytest documentation should govern implementation. Fireship’s 143-second Python overview scores 3.2/10 for this chapter’s runner-building outcome, not for entertainment or introductory quality.
+
+## Corrections and additions
+1. **Replace the old τ-bench default.** Its own README warns that the tasks are outdated. The maintained successor is at [sierra-research/tau2-bench](https://github.com/sierra-research/tau2-bench), currently branded τ³-bench. Check the current README rather than inferring a version from the repository name.
+2. **Replace the observability assignment.** [Harbor Telemetry](https://docs.harborframework.com/telemetry/telemetry) documents usage-statistics collection. It is not a lesson in instrumenting your own agent service. Add [OpenTelemetry Python instrumentation](https://opentelemetry.io/docs/languages/python/instrumentation/) and a trace-inspection exercise. [Loading trajectories](https://docs.harborframework.com/jobs/loading-trajectories) resumes sessions; it does not teach failure localization.
+3. **Make production evaluation a real module.** Add [FastAPI](https://fastapi.tiangolo.com/tutorial/), [PostgreSQL](https://www.postgresql.org/docs/current/tutorial.html), [Temporal’s Python guide](https://docs.temporal.io/develop/python), and [LangSmith’s CI/CD example](https://docs.langchain.com/langsmith/cicd-pipeline-example). Build retries, idempotency, timeouts, caching, versioning, budget enforcement and an explicit release gate. Documentation alone does not demonstrate those capabilities.
+4. **Add a current agent-eval design spine.** [Anthropic’s Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) covers task/harness/grader design, nondeterminism, capability versus regression evals, and a practical roadmap. [Mercor’s Agent Eval Systems](https://www.mercor.com/blog/agent-eval-systems/) is especially useful because its Enterprise Evals Platform JD directly links it.
+5. **Add applied-product coverage.** Run the [LangSmith RAG evaluation tutorial](https://docs.langchain.com/langsmith/evaluate-rag-tutorial), or implement equivalent retrieval and answer metrics in another stack. Add a database-backed review interface and browser/computer-use task. Merely listing WebArena and OSWorld is insufficient.
+6. **Make RL conditional on role.** Keep [the RLHF Book](https://rlhfbook.com/), TRL and Verifiers for post-training/environment targets. Add [PyTorch basics](https://pytorch.org/tutorials/beginner/basics/intro.html) and a measured training experiment. The [Hugging Face Deep RL course](https://huggingface.co/learn/deep-rl-course/unit0/introduction) explicitly reports low maintenance and broken challenge/leaderboard features; its theory remains useful, but it should not be the default modern LLM post-training route.
+7. **Fix the target-list endpoint.** The path’s Patronus careers URL returns a research/product landing page; its join page did not expose an individually verifiable JD in this crawl. Keep Patronus on a research watchlist, not a confirmed-open list. One Mistral role and an old Handshake post-training role from search were directly not found. Several Trajectory Labs JDs remain retrievable but were absent from a zero-job public feed; their status is unresolved.
+
+## Current role alignment: concrete examples
+Curriculum alignment is not an assessment of your personal eligibility. Your background and existing projects were not provided. Research, staff engineering and junior task-building roles should not share one application plan.
+
+| Employer and live posting | Level / experience signal | Skills and evidence to demonstrate |
+|---|---|---|
+| [Mechanize — Junior Software Engineer](https://jobs.ashbyhq.com/mechanize/b50c89dc-001c-4fb6-a4fc-a9f52f35b490) | Early career; Python; explicitly accepts no previous professional or ML experience. | Task ideation, reliable graders, frontier-agent failure analysis. **Proof:** Ship 5–10 original coding tasks with oracle solutions, tampering tests and a failure report. |
+| [Mercor — Member of Technical Staff, Enterprise Evals Platform](https://jobs.ashbyhq.com/mercor/35e1923b-3c1c-4bb4-94d6-ef3a529ef871) | 1–5 years industry software engineering; technical bachelor degree listed. | Golden sets, calibrated verifiers, trajectory loss analysis, rollout gates; Harbor is a bonus. **Proof:** Versioned evaluation service with human calibration and CI release gates. |
+| [Surge AI — Software Engineer, Coding Evaluation & Training Data](https://jobs.ashbyhq.com/surge-ai/9aaea669-395f-43dc-9108-3ba22ba7b806) | 2–6+ years professional software engineering. | Real-world coding tasks, rubrics, environments, data-worker qualification and client communication. **Proof:** Small coding dataset with QA guidelines, grader tests and an expert-review workflow. |
+| [Surge AI — Research Engineer, Coding Evaluation & Training Data](https://jobs.ashbyhq.com/surge-ai/b5a5d0fa-dee2-4ff2-ad41-173edab613d3) | 3–6+ years professional software engineering. | Similar task/data ownership with strong software taste and customer credibility. **Proof:** Demonstrate original tasks plus data quality decisions and failure analysis. |
+| [Handshake — Software Engineer II, Reinforcement Learning Environments](https://jobs.ashbyhq.com/handshake/f7c4d8a5-c437-4710-a818-55d8ea5c6212) | 3+ years backend / distributed / platform engineering; Bengaluru office. | TypeScript, React, PostgreSQL and cloud operation, alongside environment development. **Proof:** Full-stack environment authoring and review service backed by a database. |
+| [Collinear — MTS - Research (India)](https://jobs.ashbyhq.com/collinear-ai/870d9209-770f-431d-b881-22fb15961594) | Technical degree or substantial proof of work; engineering and ML fluency. | Long-horizon SimLabs, policy-aware verifiers and actual CPT/SFT/RL runs. **Proof:** One simulated workflow plus a small controlled post-training experiment. |
+| [AfterQuery — Software Engineer - RL Environments ](https://jobs.ashbyhq.com/AfterQuery/96bad96c-d7ad-4dca-9f9d-a8ae3e6f2794) | Docker at scale and strong understanding of LLM post-training methods. | Environment design, RLHF/RLVR rewards, trajectory experiments and synthetic data pipelines. **Proof:** Original environment family with quality checks and a data-generation experiment. |
+| [Bespoke Labs — RL Environments Engineer](https://jobs.ashbyhq.com/bespokelabs/f8db1def-3295-4209-bcb2-2f42ed16ac6c) | Prior shipped environment-generation volume and production engineering experience. | Programmatic task generation, verification, grader exploit defense and throughput. **Proof:** A repeatable generator with measured throughput, rejection reasons and production costs. |
+| [Fleet — Research Engineer, Synthetic Data & Evals | Fleet](https://fleetai.com/careers/mts-synthetic-data) | See individual posting for research/ML background. | Synthetic data, evaluation quality, experiment design and frontier-model improvement. **Proof:** Compare two data-generation strategies under held-out evaluation. |
+| [Prime Intellect — Applied Research - Evals & Data](https://jobs.ashbyhq.com/primeintellect/bbfe94a6-d1a8-47e9-86af-f117277cdacb) | Strong ML engineering; deep distributed training/inference expertise. | Customer workflows, harnesses, verifiers, Ray/vLLM/SGLang, Kubernetes; explicit visa and relocation support. **Proof:** Working Verifiers environment plus a measured training or serving experiment. |
+| [Scale AI — Staff Software Engineer, RL Environments  ](https://job-boards.greenhouse.io/scaleai/jobs/4729820005) | 8+ years; staff-level systems and technical leadership. | Sandboxes, queues, orchestration, scale, cloud, full-stack breadth and adversarial graders. **Proof:** Production-grade multi-tenant runner with reliability and throughput evidence. |
+| [Snorkel AI — Staff Applied AI Engineer - Enterprise AI Solutions](https://job-boards.greenhouse.io/snorkelai/jobs/6204368004) | 8+ years customer-facing AI/ML experience listed under preferred qualifications. | RAG, fine-tuning, agents, typed Python/FastAPI, data pipelines, customer delivery. **Proof:** Deploy an evaluated RAG/agent application with a customer-facing technical decision memo. |
+| [Handshake — Member of Technical Staff, Evals](https://jobs.ashbyhq.com/handshake/ca392442-69eb-46f5-b367-37e43c832094) | PhD or equivalent research experience and publication record requested. | New benchmarks, reward models, programmatic verifiers, human-data quality and public research. **Proof:** Rigorous original benchmark release with baselines, ablations and a research-quality report. |
+| [Scale AI — Machine Learning Research Scientist, Evaluations](https://job-boards.greenhouse.io/scaleai/jobs/4728014005) | Graduate degree, publications and post-training expertise described as ideal. | Text/multimodal benchmarks, causal failure analysis and training interventions. **Proof:** Reproducible research study connecting a diagnosed failure to a measured intervention. |
+| [Judgment Labs — Applied AI Engineer](https://jobs.ashbyhq.com/judgmentlabs/26ab8af7-8b33-43aa-9063-1ff782b36beb) | Strength in at least one of data/evaluation, agent systems, ML/RL, or infrastructure. | Large-scale agent data analysis, optimization workflows, runtimes and production integration. **Proof:** A trace-to-regression pipeline demonstrating a verified agent improvement. |
+
+Mercor’s Harbor bonus is evidence that the specialization is relevant; it does not mean all employers require Harbor. Mechanize’s junior role is a useful early-career example because it explicitly permits no previous ML or professional software experience, but it still expects strong independent task-building judgment. In contrast, the Scale staff role calls for eight-plus years and staff-level technical leadership. No number of completed videos substitutes for that experience.
+Prime Intellect explicitly mentions visa sponsorship and relocation assistance in the reviewed Evals & Data posting. For employers that do not say so, sponsorship remains unverified. “US remote” and Arize’s “Remote (San Francisco)” are location-limited labels, not permission to work from every country.
+
+## What to build instead of adding more links
+**Project 1 — An original environment/eval pack.** Start with 5–10 tasks chosen for a specific real workflow, with pinned environments, oracle and intentionally failing baselines, robust graders, grader-tampering tests, reset tests and an auditable failure taxonomy. Run multiple trials and report uncertainty. This is an initial proof project; employers asking for hundreds or thousands of shipped environments need additional scale evidence.
+**Project 2 — A product evaluation service.** Build an agent or RAG application with a backend/database, golden set, human labeling interface, held-out judge calibration, structured traces, cost/latency reporting and CI release gates. Turn a real observed failure into a regression test and demonstrate a measured improvement on a held-out set.
+**Project 3 — Optional research branch.** For post-training roles, run a small controlled SFT/RL experiment with data provenance, a held-out evaluation set, baselines and an ablation. For safety or research scientist roles, extend this into original, publication-quality work. A tutorial reproduction alone is insufficient evidence of research novelty.
+The suggested task counts are planning targets, not numbers demanded by every JD. Ship the first two projects before spending weeks on an additional broad RL course, a training-from-scratch video, or every framework in the overview.
+
+## Skill coverage gaps
+| Skill | Path coverage | Required change |
+|---|---|---|
+| Python / testing | Strong | Ch 4–9; prove this through a typed runner and meaningful tests. |
+| Eval design / graders | Strong | Ch 14–19, 22–25, 34–36; good source coverage, still needs original artifacts. |
+| Human calibration / data quality | Partial | Hamel and Eugene cover principles; add annotation QA, disagreement analysis and held-out judge validation. |
+| Traces / error analysis | Partial | ATIF and TRAIL help; loading sessions is not error analysis, and a working trace-review UI is missing. |
+| Statistics / experiments | Partial | Strong readings; add a runnable paired, repeated-trial experiment with confidence intervals. |
+| Sandboxes / environments | Strong | Ch 7, 22, 26, 28; test reset, timeout, cleanup and verifier tampering. |
+| Backend / distributed systems | Gap | Missing dedicated API, database, queues, retry/idempotency and production-service work. |
+| Cloud / CI / observability | Gap | Hosted Harbor and streaming pages are insufficient; usage telemetry is the wrong observability resource. |
+| Full stack / TypeScript | Gap | No substantive TypeScript, React or database-backed review interface module. |
+| RAG / retrieval | Partial | Some blog sections discuss RAG; no dedicated retrieval dataset and evaluation experiment. |
+| Browser / computer use | Partial | OSWorld and WebArena are listed; no implemented browser/GUI task suite. |
+| Post-training / PyTorch | Partial | RLHF Book, TRL and verl are useful; no required measured training run or PyTorch foundation. |
+| Customer / communication | Partial | Public proof chapter exists; add problem scoping, rubric review and a decision memo. |
+
+## Audit files
+- resource-scores.csv / resource-scores.json: all 151 individual scores, rationale and evidence depth.
+- job-alignment.csv / job-alignment.json: every captured engineering posting, source URL, location, extracted mentions, experience phrases and path gaps. Use focus=true to start with closer matches.
+- priority-roles.json: the 15 individually summarized roles above.
+- company-coverage.json: all 69 Pavlov company entries and the outcome of this crawl.
+- job-status-exceptions.json: closed, not-found and unresolved listings excluded from the confirmed-open recommendations.
+- sources/ and boards/: raw evidence snapshots. Source acquisition used Agent Reach’s Jina Reader, Exa through mcporter, yt-dlp/OpenCLI for video evidence, and public employer ATS feeds for current listings.
+- Agent Reach doctor ran; check-update reported v1.5.0 already current.
