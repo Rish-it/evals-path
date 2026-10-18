@@ -1,0 +1,43 @@
+index.html
+  s_f383e7f62d96cb::t_58d96cbd82c259 1-2123
+data/job-alignment.csv
+  s_f383e7f62d96cb::t_58d96cbd82c259 1-398
+audit.html
+  s_f383e7f62d96cb::t_58d96cbd82c259 1-39
+README.md
+  s_dcf85ab6791f50::t_ec1748f330eb0f 1-41
+scripts/check.cjs
+  s_dcf85ab6791f50::t_ec1748f330eb0f 1-18
+AUDIT.md
+  s_f383e7f62d96cb::t_58d96cbd82c259 1-104
+curriculum.json
+  s_f383e7f62d96cb::t_58d96cbd82c259 1-1275
+data/resource-scores.csv
+  s_f383e7f62d96cb::t_58d96cbd82c259 1-152
+.gitignore
+  s_dcf85ab6791f50::t_ec1748f330eb0f 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "171580da3050367ea2f9e2584825fd025d39215e",
+  "prompts": {},
+  "sessions": {
+    "s_dcf85ab6791f50": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "01a14875-026e-7b60-bc74-4c2815cb036f",
+        "model": "unknown"
+      },
+      "human_author": "Rishit Sharma <rishitsharmar89@gmail.com>"
+    },
+    "s_f383e7f62d96cb": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a14875-026e-7b60-bc74-4c2815cb036f",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "Rishit Sharma <rishitsharmar89@gmail.com>"
+    }
+  }
+}
